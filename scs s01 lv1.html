@@ -1,0 +1,2596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星組メソッドライブラリ｜SCS Series 01 こころの言葉 Lv1 問題集</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+
+/* ── ルビ ── */
+ruby { ruby-align: center; }
+rt {
+  font-size: 0.5em;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+/* ── リセット & ベース ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #f7f5f0;
+  --surface: #ffffff;
+  --ink: #1c1a18;
+  --muted: #7a7268;
+  --border: #e0dbd2;
+  --accent: #2c6e49;        /* 深緑 ─ メインアクセント */
+  --accent-light: #e8f4ed;
+  --star: #c9a227;          /* 金 ─ 星組カラー */
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.08);
+  --shadow-md: 0 3px 16px rgba(0,0,0,.10);
+  --r: 10px;
+
+  /* Series ごとのアクセント（UD：形＋色で区別） */
+  --s1: #2c6e49;   /* 深緑 */
+  --s2: #1a5f8a;   /* 深青 */
+  --s3: #8b3a3a;   /* 深赤 */
+  --s4: #5a3e8a;   /* 深紫 */
+  --s5: #7a5c1e;   /* 深琥珀 */
+}
+
+body {
+  background: var(--bg);
+  font-family: 'BIZ UDPGothic', 'メイリオ', sans-serif;
+  color: var(--ink);
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* ── ヘッダー ── */
+.site-header {
+  background: var(--ink);
+  color: #fff;
+  padding: 36px 20px 28px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '★';
+  font-size: 260px;
+  position: absolute;
+  right: -30px; bottom: -80px;
+  opacity: .04;
+  line-height: 1;
+  pointer-events: none;
+}
+.header-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.header-badge {
+  background: var(--star);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  padding: 3px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+.header-free {
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.site-header h1 {
+  font-family: 'Noto Serif JP', serif;
+  font-size: clamp(18px, 4.5vw, 30px);
+  font-weight: 900;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+.site-header h1 em {
+  font-style: normal;
+  color: var(--star);
+}
+.header-sub {
+  font-size: 11px;
+  opacity: .55;
+  letter-spacing: 1.5px;
+}
+
+/* ── Series ナビ ── */
+.series-nav {
+  background: var(--surface);
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.series-tabs {
+  display: flex;
+  max-width: 680px;
+  margin: 0 auto;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.series-tabs::-webkit-scrollbar { display: none; }
+
+.stab {
+  flex: 1;
+  min-width: 80px;
+  padding: 12px 6px 10px;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: none;
+  color: var(--muted);
+  font-family: 'BIZ UDPGothic', sans-serif;
+  transition: color .16s, border-color .16s, background .16s;
+  white-space: nowrap;
+  user-select: none;
+}
+.stab:hover { background: var(--bg); }
+.stab .stab-icon { display: block; font-size: 15px; margin-bottom: 3px; }
+.stab .stab-label { display: block; line-height: 1.3; }
+
+.stab.s1.active { color: var(--s1); border-color: var(--s1); }
+.stab.s2.active { color: var(--s2); border-color: var(--s2); }
+.stab.s3.active { color: var(--s3); border-color: var(--s3); }
+.stab.s4.active { color: var(--s4); border-color: var(--s4); }
+.stab.s5.active { color: var(--s5); border-color: var(--s5); }
+
+/* ── パネル ── */
+.panel { display: none; max-width: 680px; margin: 0 auto; padding: 0 16px 60px; }
+.panel.active { display: block; }
+
+/* ── Series ヘッダー ── */
+.series-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 32px 0 20px;
+  padding-bottom: 16px;
+  border-bottom: 2.5px solid currentColor;
+}
+.series-icon {
+  width: 48px; height: 48px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.series-info { flex: 1; }
+.series-num {
+  font-size: 9px;
+  letter-spacing: 3px;
+  opacity: .65;
+  margin-bottom: 2px;
+}
+.series-title {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.3;
+}
+.series-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.word-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1.5px solid currentColor;
+}
+
+/* ── 問題カード ── */
+.q-card {
+  background: var(--surface);
+  border-radius: var(--r);
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+}
+
+.q-head {
+  padding: 14px 18px 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1.5px solid var(--border);
+}
+.q-num-badge {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+}
+.q-word-label {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  font-weight: 700;
+  flex: 1;
+}
+.q-word-ruby { display: none; }
+
+/* ── 課題文 ── */
+
+.kadai-box {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  font-size: 15px;
+  line-height: 1.9;
+  border-left: 4px solid var(--border);
+}
+.kadai-box .target-word {
+  font-weight: 700;
+  border-bottom: 2.5px solid currentColor;
+  padding-bottom: 1px;
+}
+
+/* ── 問い ── */
+.mondai-q {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  line-height: 1.7;
+}
+.mondai-q::before {
+  content: '問　';
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: .5;
+}
+
+/* ── トグル解答 ── */
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'BIZ UDPGothic', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: left;
+  transition: all .18s;
+  margin-bottom: 0;
+}
+.toggle-btn:hover {
+  border-color: currentColor;
+  background: var(--accent-light);
+  color: var(--accent);
+}
+.toggle-btn.open {
+  background: var(--accent-light);
+  border-color: var(--accent);
+  color: var(--accent);
+  border-radius: 8px 8px 0 0;
+  margin-bottom: 0;
+}
+.toggle-icon {
+  display: inline-block;
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: currentColor;
+  color: #fff;
+  font-size: 12px;
+  line-height: 20px;
+  text-align: center;
+  transition: transform .22s;
+  flex-shrink: 0;
+}
+.toggle-btn.open .toggle-icon { transform: rotate(45deg); }
+.toggle-text { flex: 1; }
+.toggle-hint { font-size: 10px; font-weight: 400; opacity: .7; margin-left: auto; }
+
+.answer-box {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease;
+  border: 0px solid var(--accent);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+}
+.answer-box > .answer-inner {
+  overflow: hidden;
+}
+.answer-box.open {
+  grid-template-rows: 1fr;
+  border-width: 2px;
+}
+.q-body { padding: 18px 18px 14px; }
+
+.answer-model {
+  padding: 14px 18px 10px;
+  background: var(--accent-light);
+}
+.answer-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.answer-text {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.7;
+  color: var(--ink);
+}
+.answer-chars {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 4px;
+  font-family: 'BIZ UDPGothic', sans-serif;
+}
+
+.advice-box {
+  padding: 10px 18px 14px;
+  background: #fff;
+  border-top: 1.5px solid var(--border);
+}
+.advice-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--star);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.advice-label::before { content: '★'; font-size: 10px; }
+
+/* ── 原因・結果フロー ── */
+.flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-size: 13px;
+}
+.flow-row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 0 10px;
+  align-items: baseline;
+  padding: 4px 0;
+  border-bottom: 1px dashed var(--border);
+}
+.flow-row:last-child { border-bottom: none; }
+.flow-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.6;
+}
+.fk-cause  { background: #dbeafe; color: #1e40af; }  /* 青：原因 */
+.fk-result { background: #fce7f3; color: #9d174d; }  /* 赤：結果 */
+.fk-action { background: #fef9c3; color: #854d0e; }  /* 黄：行動 */
+.fk-point  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; } /* 緑：ポイント */
+.flow-val {
+  color: var(--ink);
+  line-height: 1.75;
+}
+.flow-arrow {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+  padding: 1px 0;
+  line-height: 1.4;
+}
+.flow-ng {
+  font-size: 11px;
+  color: #9d174d;
+  background: #fce7f3;
+  border-radius: 4px;
+  padding: 4px 8px;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+.flow-ng::before { content: '✕ '; font-weight: 700; }
+.flow-point {
+  font-size: 13px;
+  color: #166534;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  line-height: 1.75;
+  font-weight: 700;
+}
+/* ── 構成パターンラベル ── */
+.flow-pattern {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+.fp-a { background: #e0f2fe; color: #0369a1; }
+.fp-b { background: #fef3c7; color: #92400e; }
+.fp-c { background: #fce7f3; color: #9d174d; }
+.fp-d { background: #f0fdf4; color: #166534; }
+
+
+/* ── フッター ── */
+.site-footer {
+  text-align: center;
+  padding: 32px 20px;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1.5px solid var(--border);
+  margin-top: 20px;
+}
+.site-footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ── Series カラー適用ヘルパー ── */
+.c-s1 { color: var(--s1); }  .bg-s1 { background: var(--s1); }
+.c-s2 { color: var(--s2); }  .bg-s2 { background: var(--s2); }
+.c-s3 { color: var(--s3); }  .bg-s3 { background: var(--s3); }
+.c-s4 { color: var(--s4); }  .bg-s4 { background: var(--s4); }
+.c-s5 { color: var(--s5); }  .bg-s5 { background: var(--s5); }
+
+/* UD: toggle-btnのhoverは色だけでなく下線でも区別 */
+.toggle-btn:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* アニメーション */
+.panel.active .q-card {
+  animation: cardIn .25s ease both;
+}
+.panel.active .q-card:nth-child(2) { animation-delay: .06s; }
+.panel.active .q-card:nth-child(3) { animation-delay: .12s; }
+.panel.active .q-card:nth-child(4) { animation-delay: .18s; }
+
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- ヘッダー -->
+<header class="site-header">
+  <div class="header-eyebrow">
+    <span class="header-badge">星組メソッドライブラリ</span>
+    
+  </div>
+  <h1>SCS Series 01<br><em>こころの言葉</em> Lv1 問題集</h1>
+  <p class="header-sub">SHORT COMPREHENSION SERIES ／ 心情語編 Lv1</p>
+</header>
+
+<!-- Series タブ -->
+<nav class="series-nav" aria-label="Seriesナビ">
+  <div class="series-tabs" role="tablist">
+    <button class="stab s1 active" role="tab" aria-selected="true"  onclick="showPanel(1,this)">
+      <span class="stab-icon">①</span><span class="stab-label">Series 1<br>全15語</span>
+    </button>
+    <button class="stab s2" role="tab" aria-selected="false" onclick="showPanel(2,this)">
+      <span class="stab-icon">②</span><span class="stab-label">Series 2<br>全15語</span>
+    </button>
+    <button class="stab s3" role="tab" aria-selected="false" onclick="showPanel(3,this)">
+      <span class="stab-icon">③</span><span class="stab-label">Series 3<br>全15語</span>
+    </button>
+    <button class="stab s4" role="tab" aria-selected="false" onclick="showPanel(4,this)">
+      <span class="stab-icon">④</span><span class="stab-label">Series 4<br>全15語</span>
+    </button>
+    <button class="stab s5" role="tab" aria-selected="false" onclick="showPanel(5,this)">
+      <span class="stab-icon">⑤</span><span class="stab-label">Series 5<br>全15語</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ================================================================
+     SERIES 1 ── 基本の気持ち
+     使用語：がっかりする・うれしい・こわい
+================================================================ -->
+<div id="panel-1" class="panel active" role="tabpanel">
+  <div class="series-head c-s1">
+    <div class="series-icon bg-s1">①</div>
+    <div class="series-info">
+      <div class="series-num">SERIES 01 — S1</div>
+      <div class="series-title">全15語</div>
+    </div>
+  </div>
+  <div class="series-words" style="margin-bottom:16px">
+    <span class="word-tag c-s1"><ruby>安堵<rt>あんど</rt></ruby>する</span>
+    <span class="word-tag c-s1"><ruby>焦<rt>あせ</rt></ruby>る</span>
+    <span class="word-tag c-s1"><ruby>誇<rt>ほこ</rt></ruby>らしい</span>
+    <span class="word-tag c-s1"><ruby>戸惑<rt>とまど</rt></ruby>う</span>
+    <span class="word-tag c-s1"><ruby>切<rt>せつ</rt></ruby>ない</span>
+    <span class="word-tag c-s1"><ruby>憤<rt>いきどお</rt></ruby>る</span>
+    <span class="word-tag c-s1"><ruby>懐<rt>なつ</rt></ruby>かしい</span>
+    <span class="word-tag c-s1"><ruby>躊躇<rt>ちゅうちょ</rt></ruby>する</span>
+    <span class="word-tag c-s1"><ruby>感嘆<rt>かんたん</rt></ruby>する</span>
+    <span class="word-tag c-s1">うろたえる</span>
+    <span class="word-tag c-s1"><ruby>共感<rt>きょうかん</rt></ruby>する</span>
+    <span class="word-tag c-s1"><ruby>諦観<rt>ていかん</rt></ruby></span>
+    <span class="word-tag c-s1"><ruby>憧憬<rt>しょうけい</rt></ruby></span>
+    <span class="word-tag c-s1"><ruby>感傷<rt>かんしょう</rt></ruby></span>
+    <span class="word-tag c-s1"><ruby>悲嘆<rt>ひたん</rt></ruby></span>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">1</div>
+      <div class="q-word-label"><ruby>安堵<rt>あんど</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっと<ruby>心配<rt>しんぱい</rt></ruby>していたテストの<ruby>結果<rt>けっか</rt></ruby>が、<ruby>合格<rt>ごうかく</rt></ruby>だった。<br><br>私は「<span class="target-word c-s1"><ruby>安堵<rt>あんど</rt></ruby></span>」した。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「よかった…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「安堵」＝心配や緊張がとけて、ほっとすること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">2</div>
+      <div class="q-word-label"><ruby>焦<rt>あせ</rt></ruby>る</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>発表<rt>はっぴょう</rt></ruby>の<ruby>順番<rt>じゅんばん</rt></ruby>が、<ruby>突然<rt>とつぜん</rt></ruby><ruby>自分<rt>じぶん</rt></ruby>に<ruby>回<rt>まわ</rt></ruby>ってきた。<br><ruby>準備<rt>じゅんび</rt></ruby>が<ruby>全然<rt>ぜんぜん</rt></ruby>できていない。<br><br>私は「<span class="target-word c-s1"><ruby>焦<rt>あせ</rt></ruby>った</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「やばい！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「焦る」＝間に合わないかもと感じて心が急ぐこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">3</div>
+      <div class="q-word-label"><ruby>誇<rt>ほこ</rt></ruby>らしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>妹<rt>いもうと</rt></ruby>がピアノの<ruby>発表会<rt>はっぴょうかい</rt></ruby>で<ruby>一番<rt>いちばん</rt></ruby>をとった。<br>みんなが<ruby>拍手<rt>はくしゅ</rt></ruby>していた。<br><br>私は「<span class="target-word c-s1"><ruby>誇<rt>ほこ</rt></ruby>らしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「すごいだろ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「誇らしい」＝身近な人のよさが認められて胸が張ること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">4</div>
+      <div class="q-word-label"><ruby>戸惑<rt>とまど</rt></ruby>う</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>突然<rt>とつぜん</rt></ruby>「あなたが<ruby>代表<rt>だいひょう</rt></ruby>をやって」と<ruby>言<rt>い</rt></ruby>われた。<br><ruby>断<rt>ことわ</rt></ruby>るべきか、<ruby>引<rt>ひ</rt></ruby>き<ruby>受<rt>う</rt></ruby>けるべきか。<br><br>私は「<span class="target-word c-s1"><ruby>戸惑<rt>とまど</rt></ruby>った</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「どうしよう…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「戸惑う」＝どうすればよいかわからず迷うこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">5</div>
+      <div class="q-word-label"><ruby>切<rt>せつ</rt></ruby>ない</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっと<ruby>一緒<rt>いっしょ</rt></ruby>にいた<ruby>友達<rt>ともだち</rt></ruby>が、<ruby>卒業<rt>そつぎょう</rt></ruby>してしまった。<br><br>私は「<span class="target-word c-s1"><ruby>切<rt>せつ</rt></ruby>なかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「さみしいな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「切ない」＝悲しくて胸がしめつけられるような気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">6</div>
+      <div class="q-word-label"><ruby>憤<rt>いきどお</rt></ruby>る</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">がんばって<ruby>作<rt>つく</rt></ruby>った<ruby>作品<rt>さくひん</rt></ruby>を、<ruby>理由<rt>りゆう</rt></ruby>もなく<ruby>否定<rt>ひてい</rt></ruby>された。<br><br>私は「<span class="target-word c-s1"><ruby>憤<rt>いきどお</rt></ruby>った</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ふざけるな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「憤る」＝理不尽さに強い怒りを感じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">7</div>
+      <div class="q-word-label"><ruby>懐<rt>なつ</rt></ruby>かしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>押<rt>お</rt></ruby>し<ruby>入<rt>い</rt></ruby>れから<ruby>昔<rt>むかし</rt></ruby>の<ruby>写真<rt>しゃしん</rt></ruby>が<ruby>出<rt>で</rt></ruby>てきた。<br><br>私は「<span class="target-word c-s1"><ruby>懐<rt>なつ</rt></ruby>かしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「あったなあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「懐かしい」＝昔のことを思い出して温かく切ない気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">8</div>
+      <div class="q-word-label"><ruby>躊躇<rt>ちゅうちょ</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>言<rt>い</rt></ruby>いたいことがあった。<br>でも、<ruby>傷<rt>きず</rt></ruby>つけてしまうかもしれない。<br><br>私は「<span class="target-word c-s1"><ruby>躊躇<rt>ちゅうちょ</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「やめとこう」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「躊躇する」＝決断できずに一歩踏み出せないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">9</div>
+      <div class="q-word-label"><ruby>感嘆<rt>かんたん</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>友達<rt>ともだち</rt></ruby>の<ruby>絵<rt>え</rt></ruby>を<ruby>見<rt>み</rt></ruby>た。<br>こんな<ruby>表現<rt>ひょうげん</rt></ruby>ができるのかと<ruby>目<rt>め</rt></ruby>を<ruby>疑<rt>うたが</rt></ruby>った。<br><br>私は「<span class="target-word c-s1"><ruby>感嘆<rt>かんたん</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「すごすぎる」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「感嘆する」＝すばらしさに深く感動して驚くこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">10</div>
+      <div class="q-word-label">うろたえる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>突然<rt>とつぜん</rt></ruby>の<ruby>知<rt>し</rt></ruby>らせに、どうすればいいかわからなかった。<br><br>私は「<span class="target-word c-s1">うろたえた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「あわわわ…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「うろたえる」＝突然のことに慌てて冷静さを失うこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">11</div>
+      <div class="q-word-label"><ruby>共感<rt>きょうかん</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>友達<rt>ともだち</rt></ruby>が「<ruby>頑張<rt>がんば</rt></ruby>ったのに<ruby>認<rt>みと</rt></ruby>めてもらえなかった」と<ruby>言<rt>い</rt></ruby>った。<br><br>私は「<span class="target-word c-s1"><ruby>共感<rt>きょうかん</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「わかるよ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「共感する」＝相手の気持ちを自分のことのように感じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">12</div>
+      <div class="q-word-label"><ruby>諦観<rt>ていかん</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">どれだけ<ruby>努力<rt>どりょく</rt></ruby>しても、<ruby>変<rt>か</rt></ruby>えられないことがある。<br>それでいいと<ruby>思<rt>おも</rt></ruby>えるようになった。<br><br>私は「<span class="target-word c-s1"><ruby>諦観<rt>ていかん</rt></ruby></span>」にたどり<ruby>着<rt>つ</rt></ruby>いた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もう仕方ないか…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>諦観<rt>ていかん</rt></ruby>」＝<ruby>変<rt>か</rt></ruby>えられない<ruby>現実<rt>げんじつ</rt></ruby>を<ruby>静<rt>しず</rt></ruby>かに<ruby>受<rt>う</rt></ruby>け<ruby>入<rt>い</rt></ruby>れる<ruby>境地<rt>きょうち</rt></ruby></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">13</div>
+      <div class="q-word-label"><ruby>憧憬<rt>しょうけい</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あの<ruby>人<rt>ひと</rt></ruby>のように<ruby>生<rt>い</rt></ruby>きられたら、と<ruby>何度<rt>なんど</rt></ruby>も<ruby>思<rt>おも</rt></ruby>う。<br><br>私は<ruby>深<rt>ふか</rt></ruby>い「<span class="target-word c-s1"><ruby>憧憬<rt>しょうけい</rt></ruby></span>」を<ruby>感<rt>かん</rt></ruby>じた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なりたいな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>憧憬<rt>しょうけい</rt></ruby>」＝<ruby>理想<rt>りそう</rt></ruby>の<ruby>存在<rt>そんざい</rt></ruby>に<ruby>強<rt>つよ</rt></ruby>くひかれる<ruby>気持<rt>きも</rt></ruby>ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">14</div>
+      <div class="q-word-label"><ruby>感傷<rt>かんしょう</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>昔<rt>むかし</rt></ruby>よく<ruby>聴<rt>き</rt></ruby>いた<ruby>曲<rt>きょく</rt></ruby>が<ruby>流<rt>なが</rt></ruby>れてきた。<br><br>私は「<span class="target-word c-s1"><ruby>感傷<rt>かんしょう</rt></ruby></span>」にひたった。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「思い出すな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>感傷<rt>かんしょう</rt></ruby>」＝<ruby>過去<rt>かこ</rt></ruby>を<ruby>思<rt>おも</rt></ruby>い<ruby>出<rt>だ</rt></ruby>して<ruby>切<rt>せつ</rt></ruby>なくなる<ruby>気持<rt>きも</rt></ruby>ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s1">15</div>
+      <div class="q-word-label"><ruby>悲嘆<rt>ひたん</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>大切<rt>たいせつ</rt></ruby>なものを<ruby>失<rt>うしな</rt></ruby>った。<br><ruby>取<rt>と</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>しがつかないとわかっていた。<br><br>私は「<span class="target-word c-s1"><ruby>悲嘆<rt>ひたん</rt></ruby></span>」した。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「つらすぎる」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>悲嘆<rt>ひたん</rt></ruby>」＝<ruby>深<rt>ふか</rt></ruby>い<ruby>悲<rt>かな</rt></ruby>しみと<ruby>嘆<rt>なげ</rt></ruby>きに<ruby>沈<rt>しず</rt></ruby>むこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-1 -->
+<div id="panel-2" class="panel" role="tabpanel">
+  <div class="series-head c-s2">
+    <div class="series-icon bg-s2">②</div>
+    <div class="series-info">
+      <div class="series-num">SERIES 01 — S2</div>
+      <div class="series-title">全15語</div>
+    </div>
+  </div>
+  <div class="series-words" style="margin-bottom:16px">
+    <span class="word-tag c-s2"><ruby>喜<rt>よろこ</rt></ruby>ぶ</span>
+    <span class="word-tag c-s2"><ruby>驚<rt>おどろ</rt></ruby>く</span>
+    <span class="word-tag c-s2"><ruby>恥<rt>は</rt></ruby>じる</span>
+    <span class="word-tag c-s2"><ruby>悔<rt>くや</rt></ruby>しい</span>
+    <span class="word-tag c-s2"><ruby>心細<rt>こころぼそ</rt></ruby>い</span>
+    <span class="word-tag c-s2"><ruby>安<rt>やす</rt></ruby>らぐ</span>
+    <span class="word-tag c-s2">もどかしい</span>
+    <span class="word-tag c-s2"><ruby>後悔<rt>こうかい</rt></ruby>する</span>
+    <span class="word-tag c-s2"><ruby>羨<rt>うらや</rt></ruby>む</span>
+    <span class="word-tag c-s2"><ruby>高揚<rt>こうよう</rt></ruby>する</span>
+    <span class="word-tag c-s2"><ruby>動揺<rt>どうよう</rt></ruby>する</span>
+    <span class="word-tag c-s2"><ruby>落胆<rt>らくたん</rt></ruby>する</span>
+    <span class="word-tag c-s2">うらめしい</span>
+    <span class="word-tag c-s2"><ruby>感慨<rt>かんがい</rt></ruby></span>
+    <span class="word-tag c-s2"><ruby>哀愁<rt>あいしゅう</rt></ruby></span>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">1</div>
+      <div class="q-word-label"><ruby>喜<rt>よろこ</rt></ruby>ぶ</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">クラスで<ruby>一番<rt>いちばん</rt></ruby>になれると<ruby>思<rt>おも</rt></ruby>っていなかった。<br>それが、<ruby>本当<rt>ほんとう</rt></ruby>になった。<br><br>私は「<span class="target-word c-s2"><ruby>喜<rt>よろこ</rt></ruby>んだ</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「やったー！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「喜ぶ」＝よいことがあって心が明るく弾むこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">2</div>
+      <div class="q-word-label"><ruby>驚<rt>おどろ</rt></ruby>く</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">まさか<ruby>自分<rt>じぶん</rt></ruby>が<ruby>選<rt>えら</rt></ruby>ばれるとは<ruby>思<rt>おも</rt></ruby>っていなかった。<br><br>私は「<span class="target-word c-s2"><ruby>驚<rt>おどろ</rt></ruby>いた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「えっ！？」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「驚く」＝予想外のことに心が大きく揺れること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">3</div>
+      <div class="q-word-label"><ruby>恥<rt>は</rt></ruby>じる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">みんなの<ruby>前<rt>まえ</rt></ruby>で<ruby>大<rt>おお</rt></ruby>きなまちがいをしてしまった。<br><br>私は「<span class="target-word c-s2"><ruby>恥<rt>は</rt></ruby>じた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「はずかしい…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「恥じる」＝自分の失敗や欠点を恥ずかしく思うこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">4</div>
+      <div class="q-word-label"><ruby>悔<rt>くや</rt></ruby>しい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">もう<ruby>少<rt>すこ</rt></ruby>しで<ruby>勝<rt>か</rt></ruby>てたのに、<ruby>最後<rt>さいご</rt></ruby>で<ruby>逆転<rt>ぎゃくてん</rt></ruby>された。<br><br>私は「<span class="target-word c-s2"><ruby>悔<rt>くや</rt></ruby>しかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「くそー！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「悔しい」＝力が及ばなかったことが残念でたまらないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">5</div>
+      <div class="q-word-label"><ruby>心細<rt>こころぼそ</rt></ruby>い</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>知<rt>し</rt></ruby>らない<ruby>場所<rt>ばしょ</rt></ruby>に<ruby>一人<rt>ひとり</rt></ruby>で<ruby>取<rt>と</rt></ruby>り<ruby>残<rt>のこ</rt></ruby>された。<br><ruby>周<rt>まわ</rt></ruby>りに<ruby>知<rt>し</rt></ruby>っている<ruby>人<rt>ひと</rt></ruby>が<ruby>誰<rt>だれ</rt></ruby>もいない。<br><br>私は「<span class="target-word c-s2"><ruby>心細<rt>こころぼそ</rt></ruby>かった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「不安だな…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「心細い」＝頼るものがなくて不安でさびしい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">6</div>
+      <div class="q-word-label"><ruby>安<rt>やす</rt></ruby>らぐ</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>長<rt>なが</rt></ruby>い<ruby>一日<rt>いちにち</rt></ruby>が<ruby>終<rt>お</rt></ruby>わり、<ruby>好<rt>す</rt></ruby>きな<ruby>音楽<rt>おんがく</rt></ruby>を<ruby>聴<rt>き</rt></ruby>きながら<ruby>横<rt>よこ</rt></ruby>になった。<br><br>私は「<span class="target-word c-s2"><ruby>安<rt>やす</rt></ruby>らいだ</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ほっとする」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「安らぐ」＝心の緊張がほぐれて穏やかになること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">7</div>
+      <div class="q-word-label">もどかしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>伝<rt>つた</rt></ruby>えたいのに、うまく<ruby>言葉<rt>ことば</rt></ruby>にできなかった。<br><ruby>相手<rt>あいて</rt></ruby>に<ruby>全然<rt>ぜんぜん</rt></ruby>わかってもらえない。<br><br>私は「<span class="target-word c-s2">もどかしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「じれったい」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「もどかしい」＝思い通りにならずじれったい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">8</div>
+      <div class="q-word-label"><ruby>後悔<rt>こうかい</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">「あのとき<ruby>違<rt>ちが</rt></ruby>う<ruby>選択<rt>せんたく</rt></ruby>をしていれば」と<ruby>何度<rt>なんど</rt></ruby>も<ruby>思<rt>おも</rt></ruby>った。<br><br>私は「<span class="target-word c-s2"><ruby>後悔<rt>こうかい</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ああ…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「後悔する」＝あのときこうすればよかったと悔やむこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">9</div>
+      <div class="q-word-label"><ruby>羨<rt>うらや</rt></ruby>む</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>隣<rt>となり</rt></ruby>の<ruby>人<rt>ひと</rt></ruby>は<ruby>何<rt>なに</rt></ruby>でも<ruby>簡単<rt>かんたん</rt></ruby>にできる。<br><ruby>自分<rt>じぶん</rt></ruby>はどれだけ<ruby>努力<rt>どりょく</rt></ruby>してもかなわない。<br><br>私は「<span class="target-word c-s2"><ruby>羨<rt>うらや</rt></ruby>んだ</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「いいなあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「羨む」＝相手のよさを見て自分もそうなりたいと思うこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">10</div>
+      <div class="q-word-label"><ruby>高揚<rt>こうよう</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>大舞台<rt>おおぶたい</rt></ruby>に<ruby>立<rt>た</rt></ruby>つ<ruby>直前<rt>ちょくぜん</rt></ruby>、<ruby>全身<rt>ぜんしん</rt></ruby>に<ruby>力<rt>ちから</rt></ruby>がみなぎってきた。<br><br>私は「<span class="target-word c-s2"><ruby>高揚<rt>こうよう</rt></ruby>していた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「わくわく！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「高揚する」＝気持ちが高まって興奮すること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">11</div>
+      <div class="q-word-label"><ruby>動揺<rt>どうよう</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>突然<rt>とつぜん</rt></ruby>、<ruby>信<rt>しん</rt></ruby>じていた<ruby>人<rt>ひと</rt></ruby>に<ruby>裏切<rt>うらぎ</rt></ruby>られた。<br><br>私は「<span class="target-word c-s2"><ruby>動揺<rt>どうよう</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なんで！？」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「動揺する」＝突然のことに心が乱れて落ち着けないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">12</div>
+      <div class="q-word-label"><ruby>落胆<rt>らくたん</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっと<ruby>目指<rt>めざ</rt></ruby>していた<ruby>夢<rt>ゆめ</rt></ruby>が、<ruby>叶<rt>かな</rt></ruby>わないとわかった。<br><br>私は「<span class="target-word c-s2"><ruby>落胆<rt>らくたん</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「がっかりだ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「落胆する」＝期待が裏切られてひどくがっかりすること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">13</div>
+      <div class="q-word-label">うらめしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あんなに<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby>やったのに、<ruby>誰<rt>だれ</rt></ruby>にも<ruby>気<rt>き</rt></ruby>づいてもらえなかった。<br><br>私は「<span class="target-word c-s2">うらめしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ひどいな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「うらめしい」＝相手への恨みや不満が心にたまること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">14</div>
+      <div class="q-word-label"><ruby>感慨<rt>かんがい</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>長<rt>なが</rt></ruby>い<ruby>努力<rt>どりょく</rt></ruby>の<ruby>末<rt>すえ</rt></ruby>に、ようやくゴールにたどり<ruby>着<rt>つ</rt></ruby>いた。<br><br>私は<ruby>深<rt>ふか</rt></ruby>い「<span class="target-word c-s2"><ruby>感慨<rt>かんがい</rt></ruby></span>」を<ruby>覚<rt>おぼ</rt></ruby>えた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ここまで来たな…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>感慨<rt>かんがい</rt></ruby>」＝<ruby>深<rt>ふか</rt></ruby>く<ruby>心<rt>こころ</rt></ruby>に<ruby>染<rt>し</rt></ruby>みる<ruby>思<rt>おも</rt></ruby>いやしみじみとした<ruby>感動<rt>かんどう</rt></ruby></div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s2">15</div>
+      <div class="q-word-label"><ruby>哀愁<rt>あいしゅう</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>夕暮<rt>ゆうぐ</rt></ruby>れの<ruby>空<rt>そら</rt></ruby>を<ruby>見<rt>み</rt></ruby>ていたら、なんとなく<ruby>切<rt>せつ</rt></ruby>なくなってきた。<br><br>私は「<span class="target-word c-s2"><ruby>哀愁<rt>あいしゅう</rt></ruby></span>」を<ruby>感<rt>かん</rt></ruby>じた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なんか寂しい」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「<ruby>哀愁<rt>あいしゅう</rt></ruby>」＝<ruby>理由<rt>りゆう</rt></ruby>のない<ruby>寂<rt>さび</rt></ruby>しさや<ruby>切<rt>せつ</rt></ruby>なさがただよう<ruby>気持<rt>きも</rt></ruby>ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-2 -->
+<div id="panel-3" class="panel" role="tabpanel">
+  <div class="series-head c-s3">
+    <div class="series-icon bg-s3">③</div>
+    <div class="series-info">
+      <div class="series-num">SERIES 01 — S3</div>
+      <div class="series-title">全15語</div>
+    </div>
+  </div>
+  <div class="series-words" style="margin-bottom:16px">
+    <span class="word-tag c-s3">ほっとする</span>
+    <span class="word-tag c-s3">おびえる</span>
+    <span class="word-tag c-s3">むず<ruby>痒<rt>がゆ</rt></ruby>い</span>
+    <span class="word-tag c-s3"><ruby>照<rt>て</rt></ruby>れる</span>
+    <span class="word-tag c-s3"><ruby>甘<rt>あま</rt></ruby>える</span>
+    <span class="word-tag c-s3"><ruby>閉口<rt>へいこう</rt></ruby>する</span>
+    <span class="word-tag c-s3">やるせない</span>
+    <span class="word-tag c-s3"><ruby>釈然<rt>しゃくぜん</rt></ruby>としない</span>
+    <span class="word-tag c-s3"><ruby>感服<rt>かんぷく</rt></ruby>する</span>
+    <span class="word-tag c-s3"><ruby>頼<rt>たの</rt></ruby>もしい</span>
+    <span class="word-tag c-s3"><ruby>憂<rt>うれ</rt></ruby>う</span>
+    <span class="word-tag c-s3">つのる</span>
+    <span class="word-tag c-s3"><ruby>葛藤<rt>かっとう</rt></ruby></span>
+    <span class="word-tag c-s3"><ruby>感銘<rt>かんめい</rt></ruby></span>
+    <span class="word-tag c-s3"><ruby>忸怩<rt>じくじ</rt></ruby></span>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">1</div>
+      <div class="q-word-label">ほっとする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっと<ruby>心配<rt>しんぱい</rt></ruby>していた<ruby>知<rt>し</rt></ruby>らせが、<ruby>無事<rt>ぶじ</rt></ruby>だとわかった。<br><br>私は「<span class="target-word c-s3">ほっとした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「よかったあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「ほっとする」＝心配や緊張がとけて気持ちが楽になること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">2</div>
+      <div class="q-word-label">おびえる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>暗<rt>くら</rt></ruby>い<ruby>部屋<rt>へや</rt></ruby>の<ruby>中<rt>なか</rt></ruby>で、<ruby>何<rt>なに</rt></ruby>かの<ruby>気配<rt>けはい</rt></ruby>を<ruby>感<rt>かん</rt></ruby>じた。<br><br>私は「<span class="target-word c-s3">おびえた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「こわいよ…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「おびえる」＝恐ろしいものに怯えて縮こまること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">3</div>
+      <div class="q-word-label">むず<ruby>痒<rt>がゆ</rt></ruby>い</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ほめてもらったのに、<ruby>素直<rt>すなお</rt></ruby>に<ruby>喜<rt>よろこ</rt></ruby>べなかった。<br><br>私は「<span class="target-word c-s3">むず<ruby>痒<rt>がゆ</rt></ruby>かった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なんか変な感じ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「むず痒い」＝嬉しいような恥ずかしいようなもどかしい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">4</div>
+      <div class="q-word-label"><ruby>照<rt>て</rt></ruby>れる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">みんなの<ruby>前<rt>まえ</rt></ruby>でほめられて、どんな<ruby>顔<rt>かお</rt></ruby>をすればいいかわからなかった。<br><br>私は「<span class="target-word c-s3"><ruby>照<rt>て</rt></ruby>れた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もう、やめて」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「照れる」＝恥ずかしさから顔が赤くなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">5</div>
+      <div class="q-word-label"><ruby>甘<rt>あま</rt></ruby>える</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">つかれてしまって、もう<ruby>一人<rt>ひとり</rt></ruby>では<ruby>頑張<rt>がんば</rt></ruby>れなかった。<br><br>私は「<span class="target-word c-s3"><ruby>甘<rt>あま</rt></ruby>えた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「たすけて…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「甘える」＝相手を頼って寄りかかること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">6</div>
+      <div class="q-word-label"><ruby>閉口<rt>へいこう</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>何度<rt>なんど</rt></ruby>も<ruby>同<rt>おな</rt></ruby>じことを<ruby>繰<rt>く</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>され、もうどうしようもなかった。<br><br>私は「<span class="target-word c-s3"><ruby>閉口<rt>へいこう</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もうお手上げ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「閉口する」＝困り果てて何もできなくなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">7</div>
+      <div class="q-word-label">やるせない</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">どうにもならないとわかっていても、<ruby>諦<rt>あきら</rt></ruby>めきれなかった。<br><br>私は「<span class="target-word c-s3">やるせなかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「どうにもならん」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「やるせない」＝どうにもできずに気持ちのやり場がないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">8</div>
+      <div class="q-word-label"><ruby>釈然<rt>しゃくぜん</rt></ruby>としない</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>説明<rt>せつめい</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いたけれど、どうしても<ruby>納得<rt>なっとく</rt></ruby>できなかった。<br><br>私は「<span class="target-word c-s3"><ruby>釈然<rt>しゃくぜん</rt></ruby>としなかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「緊張する…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「釈然としない」＝納得できずにもやもやが残ること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">9</div>
+      <div class="q-word-label"><ruby>感服<rt>かんぷく</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あの<ruby>人<rt>ひと</rt></ruby>のやり<ruby>方<rt>かた</rt></ruby>を<ruby>見<rt>み</rt></ruby>て、<ruby>自分<rt>じぶん</rt></ruby>には<ruby>到底<rt>とうてい</rt></ruby>できないと<ruby>思<rt>おも</rt></ruby>った。<br><br>私は「<span class="target-word c-s3"><ruby>感服<rt>かんぷく</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「かなわないな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「感服する」＝深く感心して敬う気持ちになること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">10</div>
+      <div class="q-word-label"><ruby>頼<rt>たの</rt></ruby>もしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>困<rt>こま</rt></ruby>ったとき、あの<ruby>人<rt>ひと</rt></ruby>がすぐに<ruby>助<rt>たす</rt></ruby>けてくれた。<br><br>私は「<span class="target-word c-s3"><ruby>頼<rt>たの</rt></ruby>もしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「心強いな！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「頼もしい」＝信頼できて心強いと感じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">11</div>
+      <div class="q-word-label"><ruby>憂<rt>うれ</rt></ruby>う</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">この<ruby>先<rt>さき</rt></ruby>のことを<ruby>考<rt>かんが</rt></ruby>えると、<ruby>明<rt>あか</rt></ruby>るい<ruby>気持<rt>きも</rt></ruby>ちになれなかった。<br><br>私は「<span class="target-word c-s3"><ruby>憂<rt>うれ</rt></ruby>えていた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「先が心配だ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「憂う」＝先行きを心配して暗い気持ちになること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">12</div>
+      <div class="q-word-label">つのる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>待<rt>ま</rt></ruby>っても<ruby>待<rt>ま</rt></ruby>っても<ruby>返事<rt>へんじ</rt></ruby>が<ruby>来<rt>こ</rt></ruby>なかった。<br>どんどん<ruby>気<rt>き</rt></ruby>になってしかたなかった。<br><br>「<span class="target-word c-s3">つのる</span>」思いだった。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「まだかな…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「つのる」＝気持ちがだんだん強くなっていくこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">13</div>
+      <div class="q-word-label"><ruby>葛藤<rt>かっとう</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">やめたい。でもやめたくない。<br>どちらも<ruby>本当<rt>ほんとう</rt></ruby>の<ruby>気持<rt>きも</rt></ruby>ちだった。<br><br>私は「<span class="target-word c-s3"><ruby>葛藤<rt>かっとう</rt></ruby></span>」した。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「どっちなんだ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「葛藤」＝相反する気持ちの間で迷い苦しむこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">14</div>
+      <div class="q-word-label"><ruby>感銘<rt>かんめい</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あの<ruby>言葉<rt>ことば</rt></ruby>は、ずっと<ruby>心<rt>こころ</rt></ruby>に<ruby>残<rt>のこ</rt></ruby>り<ruby>続<rt>つづ</rt></ruby>けた。<br><br>私は<ruby>深<rt>ふか</rt></ruby>い「<span class="target-word c-s3"><ruby>感銘<rt>かんめい</rt></ruby></span>」を<ruby>受<rt>う</rt></ruby>けた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「忘れられないな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「感銘」＝深く心に刻まれる感動を受けること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s3">15</div>
+      <div class="q-word-label"><ruby>忸怩<rt>じくじ</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">うまくできなくて、<ruby>自分<rt>じぶん</rt></ruby>でも<ruby>情<rt>なさ</rt></ruby>けなく<ruby>思<rt>おも</rt></ruby>った。<br><br>私は「<span class="target-word c-s3"><ruby>忸怩<rt>じくじ</rt></ruby>たる<ruby>思<rt>おも</rt></ruby>い</span>」をした。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なさけない…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「忸怩」＝自分の失敗や不甲斐なさを恥じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-3 -->
+<div id="panel-4" class="panel" role="tabpanel">
+  <div class="series-head c-s4">
+    <div class="series-icon bg-s4">④</div>
+    <div class="series-info">
+      <div class="series-num">SERIES 01 — S4</div>
+      <div class="series-title">全15語</div>
+    </div>
+  </div>
+  <div class="series-words" style="margin-bottom:16px">
+    <span class="word-tag c-s4">うれしい</span>
+    <span class="word-tag c-s4"><ruby>寂<rt>さび</rt></ruby>しい</span>
+    <span class="word-tag c-s4"><ruby>悲<rt>かな</rt></ruby>しい</span>
+    <span class="word-tag c-s4"><ruby>腹<rt>はら</rt></ruby>を<ruby>立<rt>た</rt></ruby>てる</span>
+    <span class="word-tag c-s4">びっくりする</span>
+    <span class="word-tag c-s4"><ruby>感激<rt>かんげき</rt></ruby>する</span>
+    <span class="word-tag c-s4"><ruby>憤慨<rt>ふんがい</rt></ruby>する</span>
+    <span class="word-tag c-s4"><ruby>安心<rt>あんしん</rt></ruby>する</span>
+    <span class="word-tag c-s4"><ruby>屈辱<rt>くつじょく</rt></ruby></span>
+    <span class="word-tag c-s4"><ruby>昂<rt>たかぶ</rt></ruby>る</span>
+    <span class="word-tag c-s4"><ruby>物悲<rt>ものがな</rt></ruby>しい</span>
+    <span class="word-tag c-s4"><ruby>愛<rt>いと</rt></ruby>おしい</span>
+    <span class="word-tag c-s4"><ruby>懊悩<rt>おうのう</rt></ruby></span>
+    <span class="word-tag c-s4"><ruby>充足感<rt>じゅうそくかん</rt></ruby></span>
+    <span class="word-tag c-s4"><ruby>粛然<rt>しゅくぜん</rt></ruby>とする</span>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">1</div>
+      <div class="q-word-label">うれしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっとほしかったものを、<ruby>突然<rt>とつぜん</rt></ruby>プレゼントしてもらった。<br><br>私は「<span class="target-word c-s4">うれしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「さいこう！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「うれしい」＝よいことがあって心が明るく弾むこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">2</div>
+      <div class="q-word-label"><ruby>寂<rt>さび</rt></ruby>しい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">いつもそばにいた<ruby>人<rt>ひと</rt></ruby>が、いなくなってしまった。<br><br>私は「<span class="target-word c-s4"><ruby>寂<rt>さび</rt></ruby>しかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「いなくなったな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「寂しい」＝大切な人がいなくて心にすきまができること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">3</div>
+      <div class="q-word-label"><ruby>悲<rt>かな</rt></ruby>しい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>大切<rt>たいせつ</rt></ruby>なものを<ruby>失<rt>うしな</rt></ruby>って、どうしようもなかった。<br><br>私は「<span class="target-word c-s4"><ruby>悲<rt>かな</rt></ruby>しかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なんでだよ…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「悲しい」＝つらいことが起きて胸が痛くなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">4</div>
+      <div class="q-word-label"><ruby>腹<rt>はら</rt></ruby>を<ruby>立<rt>た</rt></ruby>てる</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>自分<rt>じぶん</rt></ruby>だけが<ruby>悪<rt>わる</rt></ruby>いと<ruby>言<rt>い</rt></ruby>われた。でも、そうではなかった。<br><br>私は「<span class="target-word c-s4"><ruby>腹<rt>はら</rt></ruby>を<ruby>立<rt>た</rt></ruby>てた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もう許せない」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「腹を立てる」＝怒りが込み上げてくること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">5</div>
+      <div class="q-word-label">びっくりする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">まったく<ruby>予想<rt>よそう</rt></ruby>していなかったことが、<ruby>目<rt>め</rt></ruby>の<ruby>前<rt>まえ</rt></ruby>で<ruby>起<rt>お</rt></ruby>きた。<br><br>私は「<span class="target-word c-s4">びっくりした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「うそだろ！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「びっくりする」＝予想外のことに心が大きく揺れること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">6</div>
+      <div class="q-word-label"><ruby>感激<rt>かんげき</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あの<ruby>言葉<rt>ことば</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いたとき、<ruby>胸<rt>むね</rt></ruby>がいっぱいになった。<br><br>私は「<span class="target-word c-s4"><ruby>感激<rt>かんげき</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ありがとう…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「感激する」＝強く心を動かされて胸がいっぱいになること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">7</div>
+      <div class="q-word-label"><ruby>憤慨<rt>ふんがい</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あんなにひどいことをされたのに、だれも<ruby>助<rt>たす</rt></ruby>けてくれなかった。<br><br>私は「<span class="target-word c-s4"><ruby>憤慨<rt>ふんがい</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「許せない！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「憤慨する」＝強い怒りと不満が込み上げること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">8</div>
+      <div class="q-word-label"><ruby>安心<rt>あんしん</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">ずっと<ruby>不安<rt>ふあん</rt></ruby>だったことが、うまくいったとわかった。<br><br>私は「<span class="target-word c-s4"><ruby>安心<rt>あんしん</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ほっとしたあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「安心する」＝不安や心配がなくなって落ち着くこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">9</div>
+      <div class="q-word-label"><ruby>屈辱<rt>くつじょく</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">みんなの<ruby>前<rt>まえ</rt></ruby>で、ひどく<ruby>見下<rt>みくだ</rt></ruby>された。<br><br>私は「<span class="target-word c-s4"><ruby>屈辱<rt>くつじょく</rt></ruby></span>」を<ruby>感<rt>かん</rt></ruby>じた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「バカにされた！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「屈辱」＝ひどく見下されて自尊心が傷つくこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">10</div>
+      <div class="q-word-label"><ruby>昂<rt>たかぶ</rt></ruby>る</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">いよいよ<ruby>本番<rt>ほんばん</rt></ruby>が<ruby>始<rt>はじ</rt></ruby>まるとき、<ruby>全身<rt>ぜんしん</rt></ruby>に<ruby>力<rt>ちから</rt></ruby>がみなぎった。<br><br>私は「<span class="target-word c-s4"><ruby>昂<rt>たかぶ</rt></ruby>っていた</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もえてきた！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「昂る」＝感情や気持ちが高まって興奮すること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">11</div>
+      <div class="q-word-label"><ruby>物悲<rt>ものがな</rt></ruby>しい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>特<rt>とく</rt></ruby>に<ruby>理由<rt>りゆう</rt></ruby>はないのに、なんとなく<ruby>心<rt>こころ</rt></ruby>が<ruby>沈<rt>しず</rt></ruby>んでいた。<br><br>私は「<span class="target-word c-s4"><ruby>物悲<rt>ものがな</rt></ruby>しかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なんか切ない」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「物悲しい」＝なんとなくもの寂しくて悲しい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">12</div>
+      <div class="q-word-label"><ruby>愛<rt>いと</rt></ruby>おしい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">その<ruby>小<rt>ちい</rt></ruby>さな<ruby>姿<rt>すがた</rt></ruby>を<ruby>見<rt>み</rt></ruby>ていたら、<ruby>守<rt>まも</rt></ruby>ってあげたくなった。<br><br>私は「<span class="target-word c-s4"><ruby>愛<rt>いと</rt></ruby>おしかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「守りたいな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「愛おしい」＝かわいくて大切にしたくなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">13</div>
+      <div class="q-word-label"><ruby>懊悩<rt>おうのう</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">どちらを<ruby>選<rt>えら</rt></ruby>んでも<ruby>後悔<rt>こうかい</rt></ruby>しそうで、<ruby>眠<rt>ねむ</rt></ruby>れなかった。<br><br>私は「<span class="target-word c-s4"><ruby>懊悩<rt>おうのう</rt></ruby></span>」した。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「どうすればいい…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「懊悩」＝深く悩み苦しんでもがくこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">14</div>
+      <div class="q-word-label"><ruby>充足感<rt>じゅうそくかん</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">やるべきことをやり<ruby>遂<rt>と</rt></ruby>げて、<ruby>心<rt>こころ</rt></ruby>が<ruby>満<rt>み</rt></ruby>たされた。<br><br>私は「<span class="target-word c-s4"><ruby>充足感<rt>じゅうそくかん</rt></ruby></span>」を<ruby>覚<rt>おぼ</rt></ruby>えた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「やりきった」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「充足感」＝十分に満ち足りたと感じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s4">15</div>
+      <div class="q-word-label"><ruby>粛然<rt>しゅくぜん</rt></ruby>とする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">その<ruby>場<rt>ば</rt></ruby>の<ruby>重<rt>おも</rt></ruby>さに、<ruby>思<rt>おも</rt></ruby>わず<ruby>背筋<rt>せすじ</rt></ruby>が<ruby>伸<rt>の</rt></ruby>びた。<br><br>私は「<span class="target-word c-s4"><ruby>粛然<rt>しゅくぜん</rt></ruby>とした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「身が引き締まる」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「粛然とする」＝厳かな雰囲気に心が引き締まること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-4 -->
+<div id="panel-5" class="panel" role="tabpanel">
+  <div class="series-head c-s5">
+    <div class="series-icon bg-s5">⑤</div>
+    <div class="series-info">
+      <div class="series-num">SERIES 01 — S5</div>
+      <div class="series-title">全15語</div>
+    </div>
+  </div>
+  <div class="series-words" style="margin-bottom:16px">
+    <span class="word-tag c-s5">わくわくする</span>
+    <span class="word-tag c-s5">ドキドキする</span>
+    <span class="word-tag c-s5">ハラハラする</span>
+    <span class="word-tag c-s5"><ruby>情<rt>なさ</rt></ruby>けない</span>
+    <span class="word-tag c-s5"><ruby>虚<rt>むな</rt></ruby>しい</span>
+    <span class="word-tag c-s5"><ruby>歯<rt>は</rt></ruby>がゆい</span>
+    <span class="word-tag c-s5">いたたまれない</span>
+    <span class="word-tag c-s5"><ruby>気<rt>き</rt></ruby>まずい</span>
+    <span class="word-tag c-s5">しんみりする</span>
+    <span class="word-tag c-s5">やましい</span>
+    <span class="word-tag c-s5"><ruby>憂鬱<rt>ゆううつ</rt></ruby></span>
+    <span class="word-tag c-s5"><ruby>健気<rt>けなげ</rt></ruby></span>
+    <span class="word-tag c-s5"><ruby>胸騒<rt>むなさわ</rt></ruby>ぎ</span>
+    <span class="word-tag c-s5">じんとする</span>
+    <span class="word-tag c-s5"><ruby>痛感<rt>つうかん</rt></ruby>する</span>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">1</div>
+      <div class="q-word-label">わくわくする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>明日<rt>あした</rt></ruby>はずっと<ruby>楽<rt>たの</rt></ruby>しみにしていた<ruby>日<rt>ひ</rt></ruby>だ。<br><br>私は「<span class="target-word c-s5">わくわくした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「たのしみ！」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「わくわくする」＝楽しい期待で心が弾むこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">2</div>
+      <div class="q-word-label">ドキドキする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>結果<rt>けっか</rt></ruby>が<ruby>発表<rt>はっぴょう</rt></ruby>される<ruby>直前<rt>ちょくぜん</rt></ruby>だった。<br><br>私は「<span class="target-word c-s5">ドキドキした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「どうなるの」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「ドキドキする」＝緊張や期待で心拍が速くなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">3</div>
+      <div class="q-word-label">ハラハラする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">あの<ruby>人<rt>ひと</rt></ruby>がどうなるか、<ruby>目<rt>め</rt></ruby>が<ruby>離<rt>はな</rt></ruby>せなかった。<br><br>私は「<span class="target-word c-s5">ハラハラした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「たのむよ…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「ハラハラする」＝不安で気がもめて落ち着かないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">4</div>
+      <div class="q-word-label"><ruby>情<rt>なさ</rt></ruby>けない</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">こんなこともできないのかと、<ruby>自分<rt>じぶん</rt></ruby>があきれた。<br><br>私は「<span class="target-word c-s5"><ruby>情<rt>なさ</rt></ruby>けなかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「なにやってんだ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「情けない」＝自分の不甲斐なさに情けなくなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">5</div>
+      <div class="q-word-label"><ruby>虚<rt>むな</rt></ruby>しい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">どれだけがんばっても、<ruby>何<rt>なに</rt></ruby>も<ruby>変<rt>か</rt></ruby>わらなかった。<br><br>私は「<span class="target-word c-s5"><ruby>虚<rt>むな</rt></ruby>しかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「むだだったか」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「虚しい」＝何もかも空っぽに感じられること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">6</div>
+      <div class="q-word-label"><ruby>歯<rt>は</rt></ruby>がゆい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">もう<ruby>少<rt>すこ</rt></ruby>しでうまくいくのに、どうしても<ruby>届<rt>とど</rt></ruby>かなかった。<br><br>私は「<span class="target-word c-s5"><ruby>歯<rt>は</rt></ruby>がゆかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もうちょっとなのに」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「歯がゆい」＝思うようにいかずにじれったい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">7</div>
+      <div class="q-word-label">いたたまれない</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">その<ruby>場<rt>ば</rt></ruby>にいるのが<ruby>辛<rt>つら</rt></ruby>くて、<ruby>逃<rt>に</rt></ruby>げ<ruby>出<rt>だ</rt></ruby>したかった。<br><br>私は「<span class="target-word c-s5">いたたまれなかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「もう無理だ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「いたたまれない」＝居心地が悪くてその場にいられないこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">8</div>
+      <div class="q-word-label"><ruby>気<rt>き</rt></ruby>まずい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>言<rt>い</rt></ruby>い<ruby>争<rt>あらそ</rt></ruby>った<ruby>相手<rt>あいて</rt></ruby>と、<ruby>偶然<rt>ぐうぜん</rt></ruby>また<ruby>会<rt>あ</rt></ruby>ってしまった。<br><br>私は「<span class="target-word c-s5"><ruby>気<rt>き</rt></ruby>まずかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「うわっ…会っちゃった」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「気まずい」＝関係がぎこちなくて居心地が悪いこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">9</div>
+      <div class="q-word-label">しんみりする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>昔<rt>むかし</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いていたら、<ruby>静<rt>しず</rt></ruby>かに<ruby>心<rt>こころ</rt></ruby>に<ruby>沁<rt>し</rt></ruby>みてきた。<br><br>私は「<span class="target-word c-s5">しんみりした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「そうだったなあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「しんみりする」＝静かに心がしみじみとなること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">10</div>
+      <div class="q-word-label">やましい</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">だれにも<ruby>言<rt>い</rt></ruby>えないことをしてしまった。<br><ruby>心<rt>こころ</rt></ruby>のどこかがずっと<ruby>痛<rt>いた</rt></ruby>かった。<br><br>私は「<span class="target-word c-s5">やましかった</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「ばれたらどうしよう」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「やましい」＝良心が痛んで後ろめたい気持ち</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">11</div>
+      <div class="q-word-label"><ruby>憂鬱<rt>ゆううつ</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">また<ruby>同<rt>おな</rt></ruby>じことが<ruby>始<rt>はじ</rt></ruby>まると<ruby>思<rt>おも</rt></ruby>うと、<ruby>気<rt>き</rt></ruby>が<ruby>重<rt>おも</rt></ruby>かった。<br><br>私は「<span class="target-word c-s5"><ruby>憂鬱<rt>ゆううつ</rt></ruby></span>」だった。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「また始まる…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「憂鬱」＝気が重くて晴れ晴れしない状態</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">12</div>
+      <div class="q-word-label"><ruby>健気<rt>けなげ</rt></ruby></div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">つらいはずなのに、あの<ruby>子<rt>こ</rt></ruby>は<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby>やり<ruby>続<rt>つづ</rt></ruby>けた。<br><br>私は「<span class="target-word c-s5"><ruby>健気<rt>けなげ</rt></ruby>だ</span>」と<ruby>思<rt>おも</rt></ruby>った。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「えらいなあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「健気」＝つらい状況でもけなげに頑張る様子</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">13</div>
+      <div class="q-word-label"><ruby>胸騒<rt>むなさわ</rt></ruby>ぎ</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">なんとなく、<ruby>悪<rt>わる</rt></ruby>いことが<ruby>起<rt>お</rt></ruby>きそうな<ruby>気<rt>き</rt></ruby>がした。<br><br>私は「<span class="target-word c-s5"><ruby>胸騒<rt>むなさわ</rt></ruby>ぎ</span>」を<ruby>感<rt>かん</rt></ruby>じた。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「嫌な予感…」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「胸騒ぎ」＝何か悪いことが起きそうな予感がすること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">14</div>
+      <div class="q-word-label">じんとする</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box">その<ruby>言葉<rt>ことば</rt></ruby>が、<ruby>心<rt>こころ</rt></ruby>の<ruby>奥<rt>おく</rt></ruby>まで<ruby>届<rt>とど</rt></ruby>いた。<br><br>私は「<span class="target-word c-s5">じんとした</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「しみるなあ」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「じんとする」＝感動や感謝が心の奥に響くこと</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge bg-s5">15</div>
+      <div class="q-word-label"><ruby>痛感<rt>つうかん</rt></ruby>する</div>
+    </div>
+    <div class="q-body">
+      <div class="kadai-box"><ruby>失敗<rt>しっぱい</rt></ruby>して、<ruby>自分<rt>じぶん</rt></ruby>の<ruby>未熟<rt>みじゅく</rt></ruby>さがよくわかった。<br><br>私は「<span class="target-word c-s5"><ruby>痛感<rt>つうかん</rt></ruby>した</span>」。</div>
+      <div class="mondai-q">何とつぶやいていますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon" aria-hidden="true">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box" role="region" aria-label="解答"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「まだまだだな」</div>
+        </div>
+        <div class="advice-box">
+          <div class="advice-label">意味の確認</div>
+          <div class="flow-point">「痛感する」＝身に染みて強く感じること</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-5 -->
+
+<footer class="site-footer">
+  <p>星組メソッドライブラリ　SCS Series 01 こころの言葉 Lv1 問題集</p>
+  <p style="margin-top:6px;font-size:10px">© 星組メソッド　無断転載・再配布はご遠慮ください</p>
+</footer>
+
+<script>
+/* ── 解答を閉じるユーティリティ ── */
+function closeAnswer(btn) {
+  const box  = btn.nextElementSibling;
+  const icon = btn.querySelector('.toggle-icon');
+  const txt  = btn.querySelector('.toggle-text');
+  box.classList.remove('open');
+  btn.classList.remove('open');
+  btn.setAttribute('aria-expanded', 'false');
+  if (icon) icon.textContent = '＋';
+  if (txt)  txt.textContent  = '答えを見る';
+}
+
+/* ── 全解答を強制的に閉じる ── */
+function closeAllAnswers() {
+  document.querySelectorAll('.toggle-btn.open').forEach(btn => closeAnswer(btn));
+}
+
+/* ── タブ切り替え ── */
+function showPanel(n, btn) {
+  closeAllAnswers();
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(t => {
+    t.classList.remove('active');
+    t.setAttribute('aria-selected', 'false');
+  });
+  document.getElementById('panel-' + n).classList.add('active');
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
+}
+
+/* ── トグル解答（アコーディオン完全制限）── */
+function toggleAnswer(btn) {
+  const box  = btn.nextElementSibling;
+  const icon = btn.querySelector('.toggle-icon');
+  const txt  = btn.querySelector('.toggle-text');
+  const willOpen = !box.classList.contains('open');
+
+  closeAllAnswers();
+
+  if (willOpen) {
+    box.classList.add('open');
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    icon.textContent = '×';
+    txt.textContent  = '答えを閉じる';
+  }
+}
+</script>
+</body>
+</html>
