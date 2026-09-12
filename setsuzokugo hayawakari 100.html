@@ -1,0 +1,3271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星組メソッドライブラリ｜高速接続語 100問</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --serif:"Noto Serif JP",serif;
+  --sans:"BIZ UDPGothic","Hiragino Kaku Gothic ProN",sans-serif;
+  --bg:#faf8f4;--card:#fff;--border:#e0dbd0;
+  --gold:#c8a84b;--dark:#2a2118;--mid:#5c4a30;--light:#8a7355;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--dark);min-height:100vh}
+
+.site-header{background:linear-gradient(135deg,#1a1208 0%,#3d2b0f 60%,#5c3d15 100%);padding:20px 16px 16px;text-align:center}
+.brand{font-family:var(--serif);font-size:.72em;color:rgba(255,255,255,.6);letter-spacing:.12em;margin-bottom:4px}
+.main-title{font-family:var(--serif);font-size:1.35em;color:#fff;font-weight:900;letter-spacing:.06em;line-height:1.3}
+.sub-title{font-size:.78em;color:var(--gold);margin-top:4px;letter-spacing:.08em}
+
+nav{background:#fff;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100}
+.series-tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.series-tabs::-webkit-scrollbar{display:none}
+.stab{flex:0 0 auto;min-width:80px;padding:10px 8px 8px;border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;font-family:var(--sans);color:var(--light);transition:.2s;text-align:center}
+.stab.active{border-bottom-color:var(--gold);color:var(--dark);font-weight:700}
+.stab-icon{display:block;font-size:1.3em;line-height:1}
+.stab-label{display:block;font-size:.65em;line-height:1.4;margin-top:2px}
+
+.panel{display:none;padding:12px 12px 40px;max-width:680px;margin:0 auto}
+.panel.active{display:block}
+
+.series-head{display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.series-icon{font-size:2em;line-height:1;flex-shrink:0}
+.series-num{font-family:var(--serif);font-size:.8em;color:var(--light);margin-bottom:4px}
+.series-cats{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.cat-tag{font-size:.68em;border:1px solid;border-radius:20px;padding:2px 8px}
+
+.q-card{background:var(--card);border-radius:12px;border:1px solid var(--border);margin-bottom:12px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.q-head{display:flex;align-items:center;gap:10px;padding:12px 14px 10px}
+.q-num-badge{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82em;font-weight:700;color:#fff;flex-shrink:0}
+.q-cat-tag{font-size:.7em;border:1.5px solid;border-radius:20px;padding:3px 10px;font-weight:700}
+.q-body{padding:0 14px 14px}
+.q-text{font-family:var(--serif);font-size:.98em;line-height:1.8;margin-bottom:12px;border-top:1px solid var(--border);padding-top:12px}
+.blank-box{display:inline-block;border-bottom:2px solid #333;min-width:60px;margin:0 2px;vertical-align:bottom}
+
+.opts-wrap{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.opt-item{border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.15s}
+.opt-item:active{background:#f5f0e8}
+.opt-label{font-weight:700;font-size:.85em;color:var(--light);flex-shrink:0}
+.opt-text{font-size:.85em;line-height:1.4}
+
+.toggle-btn{width:100%;padding:10px;border:1.5px solid var(--gold);border-radius:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--sans);font-size:.85em;color:var(--mid);font-weight:700;transition:.2s}
+.toggle-btn:hover{background:#fdf8ed}
+.toggle-icon{font-size:1.1em;transition:transform .2s}
+.toggle-btn[aria-expanded="true"] .toggle-icon{transform:rotate(45deg)}
+.toggle-hint{font-size:.72em;color:var(--light);font-weight:400}
+
+.answer-box{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .3s ease}
+.answer-box.open{grid-template-rows:1fr}
+.answer-inner{overflow:hidden}
+
+.answer-model{padding:14px 14px 8px}
+.answer-label{font-size:.72em;color:var(--light);font-weight:700;letter-spacing:.08em;margin-bottom:4px}
+.answer-text{font-family:var(--serif);font-size:1.15em}
+
+.advice-box{background:#f8f6f0;border-top:1px solid var(--border);padding:10px 14px}
+.advice-label{font-size:.7em;color:var(--light);font-weight:700;margin-bottom:4px}
+.flow-point{font-size:.88em;line-height:1.7;color:var(--mid)}
+
+.logic-map{display:flex;align-items:center;gap:6px;padding:12px 14px;border-top:1px solid var(--border);flex-wrap:wrap}
+.map-box{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:6px 10px;font-size:.8em;line-height:1.4;flex:1;min-width:80px;text-align:center}
+.map-arrow{text-align:center;font-size:.9em;flex-shrink:0;min-width:44px}
+.map-conn{font-weight:700;font-size:.85em}
+.map-type-label{font-size:.72em;font-weight:700;padding:2px 14px 12px;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">星組メソッドライブラリ</div>
+  <div class="main-title">高速接続語 100問</div>
+  <div class="sub-title">接続語の種類と働きを直感的に学ぶ</div>
+</header>
+<nav>
+  <div class="series-tabs" role="tablist">
+    <button class="stab active" role="tab" aria-selected="true" onclick="showPanel(1,this)">
+      <span class="stab-icon">①</span><span class="stab-label">第1セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(2,this)">
+      <span class="stab-icon">②</span><span class="stab-label">第2セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(3,this)">
+      <span class="stab-icon">③</span><span class="stab-label">第3セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(4,this)">
+      <span class="stab-icon">④</span><span class="stab-label">第4セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(5,this)">
+      <span class="stab-icon">⑤</span><span class="stab-label">第5セット<br>全20問</span>
+    </button>
+
+  </div>
+</nav>
+<main>
+<div id="panel-1" class="panel active" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">①</div>
+    <div class="series-info">
+      <div class="series-num">高速接続語 — 第1セット</div>
+      <div class="series-cats"><span class="cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果×4</span> <span class="cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接×4</span> <span class="cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加×3</span> <span class="cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示×3</span> <span class="cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ×3</span> <span class="cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照×1</span> <span class="cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換×1</span> <span class="cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限×1</span></div>
+    </div>
+  </div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">1</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">毎日こつこつと練習を続けた。<span class="blank-box">　　　</span>、試合で思うように実力が発揮できた。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">だから</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「練習を続けた（原因）→実力が発揮できた（結果）」という順当な因果の流れ。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">毎日こつこつ練習した</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">試合で実力が発揮できた</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">2</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この薬はよく効くと評判だ。<span class="blank-box">　　　</span>、人によっては副作用が出ることもある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「薬がよく効く」という肯定的な内容に対し、「副作用がある」という問題点が続く逆接の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">この薬はよく効く</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">副作用が出ることもある</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">3</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この地域は夏に多くの観光客が訪れる。<span class="blank-box">　　　</span>、冬もスキーを楽しむ人々でにぎわう。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">夏の情報に続けて、冬も同じ方向（にぎわう）の情報を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">夏に観光客が訪れる</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">冬もスキー客でにぎわう</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">4</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">日本には四季があり、季節ごとに異なる自然の美しさを楽しめる。<span class="blank-box">　　　</span>、春には桜が各地で咲き誇る。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「四季の美しさ」という一般的な主張に対し、「桜」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">季節ごとに自然の美しさがある</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">春には桜が咲き誇る</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">5</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">環境問題とは、人間の活動によって自然のバランスが崩れることで起きる様々な問題のことだ。<span class="blank-box">　　　</span>、環境問題とは人と自然のバランスが壊れることで生じる問題といえる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の内容を別の言葉でまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">人間の活動で自然のバランスが崩れる問題</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">人と自然のバランスが壊れることで生じる問題</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">6</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">長時間スマートフォンを使い続けると、目が疲れやすくなる。<span class="blank-box">　　　</span>、適度に休憩を取ることが大切だ。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">だから</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「目が疲れる（原因）→休憩が大切（結果・対策）」という順接の流れ。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">長時間使用で目が疲れる</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">適度に休憩を取ることが大切</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">7</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">インスタント食品は手軽に食べられるという利点がある。<span class="blank-box">　　　</span>、栄養バランスが偏りやすいという問題もある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「手軽さ」という利点に対し、「栄養の偏り」という問題点を示す逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">手軽に食べられる</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">栄養が偏りやすい</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">8</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">図書館では本を借りることができる。<span class="blank-box">　　　</span>、雑誌や新聞を読むスペースも設けられている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「本の貸し出し」に加えて、さらに同じ方向（図書館の機能）の情報を積み重ねている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">本を借りることができる</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">雑誌や新聞を読むスペースもある</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">9</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">水は摂氏零度以下になると固体の氷になる。<span class="blank-box">　　　</span>、水を冷凍庫に入れておくと氷になる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ添加（また・さらに）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ例示（たとえば）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">ウ：ウ順接・因果（だから・そのため）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「零度以下で固体になる（理由）→冷凍庫で氷になる（結果）」という順接の流れ。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">零度以下で固体になる</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">冷凍庫に入れると氷になる</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">10</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">野菜には体に必要なビタミンやミネラルが豊富に含まれている。<span class="blank-box">　　　</span>、ニンジンにはビタミンAが、ほうれん草には鉄分が多く含まれている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「野菜に栄養が豊富」という一般論に対し、具体的な野菜の例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">野菜にはビタミンやミネラルが豊富</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">ニンジン・ほうれん草の具体的な栄養素</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">11</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">犬は人間の指示をよく聞き、積極的に行動しようとする。<span class="blank-box">　　　</span>、猫は自由気ままに行動し、あまり命令に従わない。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">犬と猫という二つの性質を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">犬は指示をよく聞く</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">猫は自由気ままに行動する</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">12</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">リサイクルとは、使い終わった物を捨てずにもう一度資源として活用する取り組みのことだ。<span class="blank-box">　　　</span>、リサイクルとは資源の再利用のことだといえる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">長い説明を「資源の再利用」という短い言葉でまとめ直している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">使い終わった物を再び資源として活用</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">資源の再利用</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">13</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">プールで泳ぐと全身の筋肉を使うことができる。<span class="blank-box">　　　</span>、水の浮力があるため、関節への負担が少ない。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">イ</span><span class="opt-text">イ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">イ：イ添加（また・さらに）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「全身運動」に加えて「関節への負担が少ない」という同方向（水泳の利点）の情報を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">全身の筋肉を使える</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">また</span></div>
+  <div class="map-box">関節への負担が少ない</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">14</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この地域では近年、若者が都市に移り住む傾向が続いている。<span class="blank-box">　　　</span>、地元の農業や伝統行事を担う人手が不足してきている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「若者の流出（原因）→担い手不足（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">若者が都市に移り住む</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">農業や伝統行事の担い手が不足</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">15</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">今日の会議ではプロジェクトの進捗について話し合った。<span class="blank-box">　　　</span>、次回の集まりは来週の木曜日に予定している。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さて</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">さて</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">会議の内容から、次回の日程という別の話題に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">プロジェクトの進捗を話し合った</div>
+  <div class="map-arrow">↩<br><span class="map-conn">さて</span></div>
+  <div class="map-box">次回の集まりの日程</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">16</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この水族館は年中無休で開館している。<span class="blank-box">　　　</span>、年末年始の三日間は休館する場合がある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「年中無休」という内容を認めたうえで、例外となる条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">年中無休で開館</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">年末年始は休館する場合がある</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">17</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この映画は世界中で大ヒットし、興行収入の記録を次々と塗り替えた。<span class="blank-box">　　　</span>、批評家からの評価は賛否が分かれた。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「大ヒット」という肯定的な内容に対し、「評価が分かれた」という予想外の内容が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">世界中で大ヒット</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">批評家の評価は賛否が分かれた</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">18</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">現代ではさまざまな方法でコミュニケーションを取ることができる。<span class="blank-box">　　　</span>、メッセージアプリを使えば、遠くにいる人ともすぐに連絡が取れる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">エ</span><span class="opt-text">エ例示（たとえば）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">エ：エ例示（たとえば）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「様々な方法」という一般論に対し、「メッセージアプリ」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">様々な方法でコミュニケーションできる</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">メッセージアプリで遠くの人と連絡</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">19</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">読書は語彙力を高める効果がある。<span class="blank-box">　　　</span>、集中力や想像力を育てる効果もあると言われている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「語彙力」に続けて「集中力・想像力」という同方向の効果を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">語彙力を高める</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">集中力や想像力も育てる</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">20</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">ダイエットとは、体重を減らしたり健康を維持したりするために食事の内容や量を管理することだ。<span class="blank-box">　　　</span>、ダイエットとは食事をコントロールして体や健康を整えることといえる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">すなわち</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">すなわち</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「ダイエット」の説明を別の言葉で言い換えている換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">食事の内容や量を管理すること</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">すなわち</span></div>
+  <div class="map-box">食事をコントロールして体を整えること</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+</div><!-- /panel-1 -->
+<div id="panel-2" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">②</div>
+    <div class="series-info">
+      <div class="series-num">高速接続語 — 第2セット</div>
+      <div class="series-cats"><span class="cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果×3</span> <span class="cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接×3</span> <span class="cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加×2</span> <span class="cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示×2</span> <span class="cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ×2</span> <span class="cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照×2</span> <span class="cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換×1</span> <span class="cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限×2</span> <span class="cat-tag" style="color:#556b2f;border-color:#556b2f">補足×3</span></div>
+    </div>
+  </div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">21</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">大雨が続いたため、川の水位が上昇した。<span class="blank-box">　　　</span>、周辺の低地では浸水の被害が出た。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「水位上昇（原因）→浸水被害（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">川の水位が上昇した</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">低地で浸水の被害が出た</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">22</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">新しい駅ができて、この町へのアクセスがとても便利になった。<span class="blank-box">　　　</span>、地元の商店街はかえって客足が減ったという声もある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「便利になった」という肯定的な内容に対し、「客足が減った」という予想外の問題が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">アクセスが便利になった</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">商店街は客足が減った</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">23</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この植物は日当たりの良い場所で育てると元気よく成長する。<span class="blank-box">　　　</span>、水のやりすぎは根腐れの原因になるので注意が必要だ。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の内容に関連した補足情報を付け加えている。「しかし」と違い、前の内容を否定していない。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">日当たりの良い場所で元気に育つ</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">水のやりすぎに注意が必要</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">24</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">スポーツは心身の健康維持にとても効果的だ。<span class="blank-box">　　　</span>、水泳は全身の筋肉をバランスよく使うことができ、関節への負担も少ない。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「スポーツの効果」という一般論に対し、「水泳」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">スポーツは心身の健康維持に効果的</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">水泳は全身運動で関節への負担が少ない</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">25</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">都市部では交通機関や商業施設が充実し、生活の利便性が高い。<span class="blank-box">　　　</span>、農村部では自然が豊かで、ゆったりとした生活を送ることができる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">都市部と農村部という二つの異なる特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">都市部は利便性が高い</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">農村部は自然豊かでゆったりした生活</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">26</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">寝不足が続くと、集中力が低下し、ミスが増えやすくなる。<span class="blank-box">　　　</span>、十分な睡眠を取ることが仕事や勉強の効率を上げるために重要だ。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">ア：ア順接・因果（だから・そのため）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「寝不足の悪影響（原因）→睡眠の重要性（対策・結論）」という順接の流れ。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">寝不足で集中力が低下しミスが増える</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">十分な睡眠が効率を上げるために重要</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">27</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">持続可能な開発とは、現在の世代が必要なものを満たしつつ、将来の世代も同じように必要なものを満たせるよう配慮した開発のことだ。<span class="blank-box">　　　</span>、今も未来も共に豊かであり続けるための開発のことといえる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">長い説明を短くまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">現在も将来の世代も必要を満たせる開発</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">今も未来も共に豊かな開発</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">28</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">ボランティア活動は地域の人々の助けになる。<span class="blank-box">　　　</span>、参加した人自身が多くのことを学び、成長できるという効果もある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「地域への貢献」に加えて「参加者の成長」という同方向の効果を積み重ねている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">地域の人々の助けになる</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">参加者自身も成長できる</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">29</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">このサービスは会員であれば誰でも無料で利用できる。<span class="blank-box">　　　</span>、一部の特別なコンテンツについては別途料金がかかる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「無料利用」という内容を認めたうえで、例外の条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">会員なら誰でも無料で利用できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">特別なコンテンツは別途料金がかかる</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">30</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この地域では昔から農業が盛んに行われてきた。<span class="blank-box">　　　</span>、近年は農業を継ぐ若者が減り、耕作放棄地が増えている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「農業が盛ん」という状況に対し、「後継者不足」という問題が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">昔から農業が盛ん</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">農業を継ぐ若者が減っている</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">31</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この美術館は月曜日が定休日となっている。<span class="blank-box">　　　</span>、月曜日が祝日の場合は翌火曜日が休館となる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">エ</span><span class="opt-text">エ補足（なお・ちなみに）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">エ：エ補足（なお・ちなみに）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「月曜定休」という内容に関連した補足情報を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">月曜日が定休日</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">月曜祝日の場合は翌火曜が休館</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">32</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">気温が高い日が続くと、食べ物が傷みやすくなる。<span class="blank-box">　　　</span>、夏場は食中毒が起きやすい。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">だから</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「気温が高い→食品が傷む（原因）→食中毒が起きやすい（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">気温が高いと食べ物が傷みやすい</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">夏場は食中毒が起きやすい</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">33</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">言語によって表現の仕方は異なる。<span class="blank-box">　　　</span>、日本語では「いただきます」という食事の前に言う言葉があるが、英語には対応する言葉がない。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「言語による表現の違い」という一般論に対し、「いただきます」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">言語によって表現の仕方は異なる</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">「いただきます」は英語に対応する言葉がない</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">34</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">今日はここまでにしましょう。<span class="blank-box">　　　</span>、次の話題に移りたいと思います。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ところで</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">ところで</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の話題を終えて、新しい話題に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">今日はここまでにする</div>
+  <div class="map-arrow">↩<br><span class="map-conn">ところで</span></div>
+  <div class="map-box">次の話題に移る</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">35</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">太陽光発電は天候に左右されるという弱点がある。しかし、化石燃料を使わないため環境への負荷が少ない。<span class="blank-box">　　　</span>、発電コストも年々下がってきている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「環境への負荷が少ない」という利点に加えて「コスト低下」という同方向の利点を積み重ねている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">環境への負荷が少ない</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">発電コストも下がっている</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">36</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">夏は気温が高く、日照時間も長いため、植物が活発に成長する。<span class="blank-box">　　　</span>、冬は気温が低く、日照時間も短いため、植物の成長は緩やかになる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ対比・対照（一方・逆に）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">ウ：ウ対比・対照（一方・逆に）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">夏と冬という二つの季節の特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">夏は気温高く植物が活発に成長</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">冬は気温低く成長が緩やか</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">37</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">フードロスとは、まだ食べられるにもかかわらず廃棄される食品のことだ。<span class="blank-box">　　　</span>、食べられるのに捨てられてしまう食品のことをフードロスという。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">すなわち</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">すなわち</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「フードロス」の説明を言い換えた換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">食べられるのに廃棄される食品</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">すなわち</span></div>
+  <div class="map-box">食べられるのに捨てられる食品</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">38</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">公共交通機関の整備が進み、この地域の交通の便はよくなった。<span class="blank-box">　　　</span>、自家用車を持たない高齢者にとっては、まだ不便な地域も多い。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「交通が便利になった」という内容に対し、「高齢者には不便」という問題が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">交通の便がよくなった</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">高齢者にはまだ不便な地域も多い</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">39</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この薬は食後に服用してください。<span class="blank-box">　　　</span>、アルコールと一緒に飲むことは避けてください。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">服用方法に関連した補足的な注意事項を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">食後に服用する</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">アルコールと一緒に飲むのは避ける</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">40</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この公園は朝六時から夜九時まで利用できる。<span class="blank-box">　　　</span>、バーベキューなどの火気使用は禁止されている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「利用できる」という内容を認めたうえで、禁止事項という制限を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">朝6時から夜9時まで利用できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">火気使用は禁止</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+</div><!-- /panel-2 -->
+<div id="panel-3" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">③</div>
+    <div class="series-info">
+      <div class="series-num">高速接続語 — 第3セット</div>
+      <div class="series-cats"><span class="cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果×3</span> <span class="cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接×3</span> <span class="cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加×2</span> <span class="cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示×2</span> <span class="cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ×2</span> <span class="cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照×2</span> <span class="cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換×2</span> <span class="cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限×2</span> <span class="cat-tag" style="color:#556b2f;border-color:#556b2f">補足×2</span></div>
+    </div>
+  </div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">41</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">プラスチックごみが海に流れ込むと、海の生き物が誤って食べてしまうことがある。<span class="blank-box">　　　</span>、海洋生物の生態系に深刻なダメージを与える。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「誤食（原因）→生態系へのダメージ（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">海洋生物がプラスチックを誤食する</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">生態系に深刻なダメージを与える</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">42</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">AIの発展により、多くの作業が自動化され、生産性が大幅に向上している。<span class="blank-box">　　　</span>、AIに仕事を奪われるという不安を感じる人も少なくない。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「生産性向上」という肯定的な内容に対し、「不安」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">AI発展で生産性が向上</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">仕事を奪われる不安を感じる人もいる</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">43</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この地域では伝統的な祭りが毎年開催されている。<span class="blank-box">　　　</span>、地元の食材を使った料理が楽しめるイベントも定期的に行われている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「祭り」に続けて「食のイベント」という同方向の地域の取り組みを付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">伝統的な祭りが毎年開催</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">地元食材のイベントも開催</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">44</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">世界には多くの絶滅危惧種が存在する。<span class="blank-box">　　　</span>、アムールヒョウは現在野生で百頭程度しか生存していないとされている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「絶滅危惧種の存在」という一般論に対し、「アムールヒョウ」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">多くの絶滅危惧種が存在する</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">アムールヒョウは野生で百頭程度</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">45</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">バリアフリーとは、障害のある人や高齢者が社会生活を送る上で障壁となるものを取り除くことだ。<span class="blank-box">　　　</span>、誰もが生活しやすい環境を整えることをバリアフリーという。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「バリアフリー」の説明を別の言葉でまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">障壁となるものを取り除くこと</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">誰もが生活しやすい環境を整えること</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">46</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">人間は社会の中でルールに従って行動することが求められる。<span class="blank-box">　　　</span>、他の動物は本能や習性に従って行動する。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">人間と動物という二つの存在の行動の仕方を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">人間はルールに従って行動する</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">動物は本能や習性に従って行動する</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">47</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">砂漠では昼と夜の気温差が激しい。昼間は五十度を超えることもある一方、夜は零度近くまで冷え込むことがある。<span class="blank-box">　　　</span>、砂漠で生きる生き物は極端な温度変化に適応する必要がある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">ア：ア順接・因果（だから・そのため）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「気温差が激しい（原因）→適応が必要（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">気温差が激しい</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">極端な温度変化に適応する必要がある</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">48</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">環境問題については以上です。<span class="blank-box">　　　</span>、次に経済について話し合いましょう。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さて</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">さて</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の話題（環境問題）から次の話題（経済）に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">環境問題の話が終わる</div>
+  <div class="map-arrow">↩<br><span class="map-conn">さて</span></div>
+  <div class="map-box">経済の話題へ</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">49</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この施設は障害をお持ちの方も利用できるよう設計されています。<span class="blank-box">　　　</span>、車いす用のスロープとエレベーターが完備されています。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ちなみに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">ちなみに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の内容に関連した補足情報として、具体的な設備の詳細を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">障害のある方も利用できる設計</div>
+  <div class="map-arrow">→補<br><span class="map-conn">ちなみに</span></div>
+  <div class="map-box">スロープとエレベーターが完備</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">50</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">再生可能エネルギーは二酸化炭素を排出しないため、地球温暖化対策として注目されている。<span class="blank-box">　　　</span>、天候に左右されやすく、安定的に電力を供給することが難しいという課題もある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「温暖化対策として有効」という利点に対し、「安定供給の難しさ」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">CO2を排出しない</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">天候に左右されやすく安定供給が難しい</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">51</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">このキャンプ場は予約なしでも利用できます。<span class="blank-box">　　　</span>、繁忙期はキャンセルが出た場合のみ受け入れとなります。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ条件・制限（ただし・もっとも）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ添加（また・さらに）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ウ：ウ条件・制限（ただし・もっとも）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「予約なし可」という内容を認めたうえで、繁忙期という例外条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">予約なしでも利用できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">繁忙期はキャンセル待ちのみ</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">52</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">森林が失われると、雨水が土に吸収されにくくなる。<span class="blank-box">　　　</span>、洪水や土砂崩れが起きやすくなる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「吸収されにくい（原因）→洪水・土砂崩れ（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">雨水が土に吸収されにくくなる</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">洪水や土砂崩れが起きやすくなる</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">53</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">日本語には、同じ意味を表す言葉でも場面によって使い分けるものがある。<span class="blank-box">　　　</span>、「食べる」という意味の言葉には「いただく」「召し上がる」など、丁寧さの度合いによって異なる表現がある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「場面による使い分け」という一般論に対し、「食べる」の敬語という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">場面によって使い分ける言葉がある</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">「食べる」の敬語表現の違い</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">54</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">運動は体の健康に良い影響を与えるだけでなく、ストレス解消にもなる。<span class="blank-box">　　　</span>、規則正しい生活リズムを作るのにも役立つとされている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">運動の効果をさらに積み重ねている添加の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">体の健康に良くストレス解消にもなる</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">規則正しい生活リズム作りにも役立つ</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">55</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">グローバル化とは、国境を越えて人・物・情報・お金が行き来し、世界が一つにつながっていく動きのことだ。<span class="blank-box">　　　</span>、世界が国境を越えてつながっていく流れのことをグローバル化という。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">エ</span><span class="opt-text">エ換言・まとめ（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">エ：エ換言・まとめ（つまり・すなわち）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「グローバル化」の説明を別の言葉でまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">国境を越えて世界がつながる動き</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">世界がつながっていく流れ</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">56</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この新しいシステムは操作が簡単で、誰でもすぐに使いこなせると期待されていた。<span class="blank-box">　　　</span>、実際に導入してみると、慣れるまでに時間がかかるという声が多く上がった。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「使いやすいという期待」に対し、「実際は時間がかかった」という予想外の展開が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">誰でもすぐ使いこなせると期待</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">慣れるまでに時間がかかるという声</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">57</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">西洋の絵画は遠近法を使って立体的な空間を表現することを重視する傾向がある。<span class="blank-box">　　　</span>、日本の伝統的な絵画は平面的な表現を好み、余白を大切にする傾向がある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">西洋と日本の絵画という二つの特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">西洋絵画は立体的な空間表現を重視</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">日本絵画は平面的で余白を大切にする</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">58</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この展覧会は無料でご覧いただけます。<span class="blank-box">　　　</span>、音声ガイドはレンタル料金が別途かかります。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「無料」という内容に関連した補足情報として、音声ガイドの料金を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">展覧会は無料</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">音声ガイドは別途料金</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">59</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この割引サービスはすべてのお客様にご利用いただけます。<span class="blank-box">　　　</span>、割引の適用は一人につき一回限りとなります。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「全員利用可」という内容を認めたうえで、回数制限という条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">すべてのお客様が利用できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">一人につき一回限り</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">60</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">本日の議題はすべて終了しました。<span class="blank-box">　　　</span>、来月のイベントについてお知らせがあります。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ところで</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">ところで</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">前の話題を終えて、来月のイベントという別の話題に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">本日の議題が終了</div>
+  <div class="map-arrow">↩<br><span class="map-conn">ところで</span></div>
+  <div class="map-box">来月のイベントのお知らせ</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+</div><!-- /panel-3 -->
+<div id="panel-4" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">④</div>
+    <div class="series-info">
+      <div class="series-num">高速接続語 — 第4セット</div>
+      <div class="series-cats"><span class="cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果×3</span> <span class="cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接×3</span> <span class="cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加×2</span> <span class="cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示×2</span> <span class="cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ×2</span> <span class="cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照×2</span> <span class="cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換×1</span> <span class="cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限×2</span> <span class="cat-tag" style="color:#556b2f;border-color:#556b2f">補足×3</span></div>
+    </div>
+  </div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">61</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">毎日少しずつ単語を覚えるようにした。<span class="blank-box">　　　</span>、苦手だった英語のテストで高い点数が取れるようになった。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「毎日単語を覚えた（原因）→テストで高得点（結果）」という順当な因果の流れ。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">毎日少しずつ単語を覚えた</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">英語のテストで高得点が取れた</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">62</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この地域の伝統工芸品は、職人の手仕事による高い品質で知られている。<span class="blank-box">　　　</span>、後継者不足が深刻で、技術の継承が難しくなっている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「高品質」という肯定的な内容に対し、「後継者不足」という問題が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">高い品質で知られている</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">後継者不足で技術継承が難しい</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">63</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">和食はユネスコの無形文化遺産に登録されている。<span class="blank-box">　　　</span>、世界中に和食レストランが広がり、日本食の人気は世界的に高まっている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「文化遺産登録」に続けて「世界的な普及」という同方向の情報を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">和食はユネスコ無形文化遺産に登録</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">世界中に和食レストランが広がる</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">64</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">人間の脳は非常に複雑な働きをする。<span class="blank-box">　　　</span>、視覚・聴覚・言語など、それぞれ異なる機能を担う部位が存在する。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「脳の複雑な働き」という一般論に対し、「各部位の機能」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">脳は非常に複雑な働きをする</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">視覚・聴覚・言語など部位ごとに機能がある</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">65</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">デジタル書籍はスマートフォンやタブレットで手軽に読め、何冊でも持ち運びができる。<span class="blank-box">　　　</span>、紙の書籍は目が疲れにくく、書き込みやページをめくる感覚を楽しめる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">デジタル書籍と紙の書籍という二つの特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">デジタル書籍は手軽で何冊も持ち運べる</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">紙の書籍は疲れにくく書き込みも楽しめる</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">66</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">自動翻訳の技術が進歩し、言語の壁を越えたコミュニケーションが容易になってきた。<span class="blank-box">　　　</span>、微妙なニュアンスや文化的な背景を含む表現は、機械翻訳では正確に伝えることが難しいこともある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ例示（たとえば）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">イ：イ逆接（しかし・だが）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「翻訳技術の進歩」という利点に対し、「機械翻訳の限界」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">言語の壁を越えるコミュニケーションが容易に</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">微妙なニュアンスは機械翻訳で伝えにくい</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">67</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">インフラとは、電気・水道・道路・通信など、社会生活を支えるために必要な基盤となる施設や設備のことだ。<span class="blank-box">　　　</span>、社会が機能するための土台となる設備全般のことをインフラという。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「インフラ」の説明を短くまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">社会生活を支える基盤となる施設・設備</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">社会が機能するための土台となる設備全般</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">68</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">本日の講演会は午後二時より開始いたします。<span class="blank-box">　　　</span>、会場内での録音・撮影はご遠慮ください。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">開始時間の案内に関連した補足情報として、会場内のルールを付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">午後2時より開始</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">会場内での録音・撮影は禁止</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">69</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">このアプリは無料でダウンロードして使用できます。<span class="blank-box">　　　</span>、一部のプレミアム機能は有料となっております。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「無料利用」という内容を認めたうえで、有料機能という例外条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">無料でダウンロードして使用できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">一部のプレミアム機能は有料</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">70</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">毎朝ジョギングを続けると、体力がついてきた。<span class="blank-box">　　　</span>、以前は疲れやすかった仕事も、集中して取り組めるようになった。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「体力がついた（原因）→仕事に集中して取り組める（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">体力がついてきた</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">仕事も集中して取り組めるように</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">71</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">今週のニュースはこれで以上です。<span class="blank-box">　　　</span>、明日の天気についてお伝えします。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さて</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">さて</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">ニュースから天気という別の話題に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">今週のニュースが終了</div>
+  <div class="map-arrow">↩<br><span class="map-conn">さて</span></div>
+  <div class="map-box">明日の天気の話題へ</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">72</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この研究では、睡眠不足が学習効率を下げることが明らかになった。<span class="blank-box">　　　</span>、睡眠不足が続くと免疫機能が低下するという結果も得られた。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「学習効率の低下」に加えて「免疫機能の低下」という同方向の悪影響を積み重ねている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">睡眠不足が学習効率を下げる</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">睡眠不足で免疫機能も低下する</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">73</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">当店は年中無休で営業しております。<span class="blank-box">　　　</span>、臨時休業の際はホームページでお知らせいたします。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">エ</span><span class="opt-text">エ補足（なお・ちなみに）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">エ：エ補足（なお・ちなみに）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「年中無休」という内容に関連した補足として、臨時休業時の案内方法を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">年中無休で営業</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">臨時休業はホームページでお知らせ</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">74</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この国は豊かな自然に恵まれ、多くの観光客が世界中から訪れる。<span class="blank-box">　　　</span>、急速な開発によって自然環境が失われつつあるという問題も抱えている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「自然豊か・観光地」という肯定的な内容に対し、「環境破壊」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">豊かな自然に恵まれ観光客が多い</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">開発で自然環境が失われつつある</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">75</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">近年、プログラミング教育が世界中で重視されるようになってきた。<span class="blank-box">　　　</span>、フィンランドでは小学校からプログラミングを教科として取り入れている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「プログラミング教育の重視」という一般論に対し、「フィンランド」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">プログラミング教育が世界中で重視</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">フィンランドでは小学校から教科として</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">76</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">多文化共生とは、異なる文化や背景を持つ人々が互いを尊重し合いながら、同じ社会の中で共に生活することだ。<span class="blank-box">　　　</span>、様々な文化を持つ人々が尊重し合って共に暮らすことを多文化共生という。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">すなわち</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">すなわち</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「多文化共生」の説明を言い換えた換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">異なる文化を持つ人々が尊重し合い共に生活</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">すなわち</span></div>
+  <div class="map-box">様々な文化の人々が尊重し合って暮らすこと</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">77</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">科学的な思考は、データや証拠をもとに論理的に結論を導き出すことを重視する。<span class="blank-box">　　　</span>、芸術的な思考は、感性や直感を大切にし、ルールにとらわれない自由な発想を重視する。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ対比・対照（一方・逆に）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">ウ：ウ対比・対照（一方・逆に）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">科学的思考と芸術的思考という二つの特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">科学的思考はデータと論理を重視</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">芸術的思考は感性と自由な発想を重視</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">78</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">このイベントはどなたでもご参加いただけます。<span class="blank-box">　　　</span>、小学生以下のお子様は保護者の同伴が必要です。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「全員参加可」という内容を認めたうえで、保護者同伴という条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">誰でも参加できる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">小学生以下は保護者の同伴が必要</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">79</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">今回のアンケートにご協力いただいた方には、抽選でプレゼントが当たります。<span class="blank-box">　　　</span>、当選の発表は商品の発送をもって代えさせていただきます。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">プレゼントの案内に関連した補足として、当選発表の方法を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">抽選でプレゼントが当たる</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">当選発表は商品発送をもって代える</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">80</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">海水温度が上昇すると、台風が発達しやすくなる。<span class="blank-box">　　　</span>、近年は非常に強い台風が増える傾向にある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">だから</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「海水温上昇→台風が発達（原因）→強い台風が増える（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">海水温度が上昇すると台風が発達しやすい</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">近年は強い台風が増える傾向</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+</div><!-- /panel-4 -->
+<div id="panel-5" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">⑤</div>
+    <div class="series-info">
+      <div class="series-num">高速接続語 — 第5セット</div>
+      <div class="series-cats"><span class="cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果×3</span> <span class="cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接×3</span> <span class="cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加×3</span> <span class="cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示×2</span> <span class="cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ×2</span> <span class="cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照×2</span> <span class="cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換×2</span> <span class="cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限×2</span> <span class="cat-tag" style="color:#556b2f;border-color:#556b2f">補足×1</span></div>
+    </div>
+  </div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">81</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">SNSを活用することで、個人が世界中に情報を発信できるようになった。<span class="blank-box">　　　</span>、誤った情報が拡散しやすくなるというリスクも生まれた。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「情報発信の自由化」という利点に対し、「誤情報の拡散リスク」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">個人が世界中に情報を発信できるように</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">誤情報が拡散しやすくなるリスクも</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">82</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この公園には広い芝生エリアがある。<span class="blank-box">　　　</span>、子どもが遊べる遊具も充実している。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「芝生エリア」に続けて「遊具」という同方向（公園の設備）の情報を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">広い芝生エリアがある</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">子どもが遊べる遊具も充実</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">83</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">和食には健康に良いとされる食材が多く使われている。<span class="blank-box">　　　</span>、味噌汁に使われる大豆や、刺身の薬味として添えられるわさびなどは、それぞれ栄養価が高い。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">たとえば</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">たとえば</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「健康に良い食材」という一般論に対し、「大豆・わさび」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">健康に良い食材が多く使われる</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">大豆・わさびなど栄養価の高い食材</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">84</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">ユニバーサルデザインとは、年齢・性別・障害の有無に関わらず、すべての人が使いやすいように設計された製品や環境のことだ。<span class="blank-box">　　　</span>、誰にとっても使いやすいデザインのことをユニバーサルデザインという。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「ユニバーサルデザイン」の説明を短くまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">すべての人が使いやすいよう設計された製品や環境</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">誰にとっても使いやすいデザイン</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">85</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">短距離走は瞬発力と速さを競う種目で、レース時間は十秒前後と非常に短い。<span class="blank-box">　　　</span>、マラソンは四十二キロメートルを走る持久力と精神力の種目で、完走まで二時間以上かかる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">短距離走とマラソンという二つの種目の特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">短距離走は瞬発力・速さを競う</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">マラソンは持久力・精神力の種目</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">86</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">都市部への人口集中が進むと、地方では過疎化が進みやすくなる。<span class="blank-box">　　　</span>、地方の農業や伝統文化を担う人が減り、地域の維持が難しくなる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">ウ添加（また・さらに）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">ア：ア順接・因果（だから・そのため）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「過疎化（原因）→担い手減少（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">地方で過疎化が進む</div>
+  <div class="map-arrow">→<br><span class="map-conn">だから</span></div>
+  <div class="map-box">農業や伝統文化の担い手が減る</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">87</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">今日のセミナーはこれで終了です。<span class="blank-box">　　　</span>、次回は来月の第二火曜日に開催を予定しております。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">セミナー終了の案内に関連した補足として、次回の日程を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">本日のセミナーが終了</div>
+  <div class="map-arrow">↩<br><span class="map-conn">なお</span></div>
+  <div class="map-box">次回の開催日程</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">88</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この電車は全席自由席です。<span class="blank-box">　　　</span>、混雑時には座れない場合もありますのでご了承ください。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">ただし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ただし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「全席自由席」という内容を認めたうえで、混雑時という例外条件を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">全席自由席</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">混雑時には座れない場合も</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">89</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">マスクの着用は感染症の拡大を防ぐ効果がある。<span class="blank-box">　　　</span>、長時間着用すると息苦しさを感じたり、肌荒れの原因になったりすることもある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「感染防止効果」という利点に対し、「着用の弊害」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">感染症拡大を防ぐ効果がある</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">長時間着用で息苦しさや肌荒れの原因に</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">90</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">工場から排出される有害物質が川に流れ込んだ。<span class="blank-box">　　　</span>、川に生息する魚や水生生物が大きなダメージを受けた。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「有害物質の流入（原因）→水生生物へのダメージ（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">有害物質が川に流れ込んだ</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">川の魚や水生生物がダメージを受けた</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">91</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この映画は国内外で多くの賞を受賞した。<span class="blank-box">　　　</span>、公開から一年が経った今もロングラン上映が続いている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さらに</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">さらに</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「受賞」という成功に加えて「ロングラン上映」という同方向の成功を積み重ねている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">国内外で多くの賞を受賞</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">さらに</span></div>
+  <div class="map-box">一年経ってもロングラン上映が続く</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#8b5e2e">92</div>
+    <div class="q-cat-tag" style="color:#8b5e2e;border-color:#8b5e2e">例示</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">地球上にはさまざまな気候帯が存在する。<span class="blank-box">　　　</span>、赤道付近の熱帯では年間を通じて気温が高く、豊かな熱帯雨林が広がっている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ例示（たとえば）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ換言（つまり・すなわち）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#8b5e2e;font-weight:700;font-size:1.1em">ウ：ウ例示（たとえば）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「様々な気候帯」という一般論に対し、「熱帯」という具体例を挙げている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">様々な気候帯が存在する</div>
+  <div class="map-arrow">→具<br><span class="map-conn">たとえば</span></div>
+  <div class="map-box">熱帯では気温が高く熱帯雨林が広がる</div>
+</div>
+<div class="map-type-label" style="color:#8b5e2e">論理の流れ｜例示</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#b5760c">93</div>
+    <div class="q-cat-tag" style="color:#b5760c;border-color:#b5760c">対比・対照</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">草食動物は植物を食べるため歯が平らで、口を横に動かしてすりつぶすように食べる。<span class="blank-box">　　　</span>、肉食動物は獲物を捕えるための鋭い歯を持ち、縦に噛み切るように食べる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">一方</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#b5760c;font-weight:700;font-size:1.1em">一方</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">草食動物と肉食動物の食べ方・歯の特徴を対等に並べて対照的に示している。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">草食動物は平らな歯で横に動かして食べる</div>
+  <div class="map-arrow">⇔<br><span class="map-conn">一方</span></div>
+  <div class="map-box">肉食動物は鋭い歯で縦に噛み切る</div>
+</div>
+<div class="map-type-label" style="color:#b5760c">論理の流れ｜対比・対照</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#7a3d8c">94</div>
+    <div class="q-cat-tag" style="color:#7a3d8c;border-color:#7a3d8c">換言・まとめ</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">フェアトレードとは、発展途上国で生産された農産物や製品を、生産者が適正な報酬を受け取れるような公正な価格で取引することだ。<span class="blank-box">　　　</span>、生産者の暮らしを守るための公正な貿易の仕組みのことをフェアトレードという。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">つまり</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">だから</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#7a3d8c;font-weight:700;font-size:1.1em">つまり</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「フェアトレード」の説明を短くまとめ直している換言の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">生産者が適正な報酬を受け取れる取引</div>
+  <div class="map-arrow">→＝<br><span class="map-conn">つまり</span></div>
+  <div class="map-box">生産者の暮らしを守る公正な貿易の仕組み</div>
+</div>
+<div class="map-type-label" style="color:#7a3d8c">論理の流れ｜換言・まとめ</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#556b2f">95</div>
+    <div class="q-cat-tag" style="color:#556b2f;border-color:#556b2f">補足</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">この薬は一日三回、食後に服用してください。<span class="blank-box">　　　</span>、妊娠中の方は服用前に医師にご相談ください。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">なお</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#556b2f;font-weight:700;font-size:1.1em">なお</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">服用方法の説明に関連した補足として、妊娠中の方への注意事項を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">一日三回食後に服用</div>
+  <div class="map-arrow">→補<br><span class="map-conn">なお</span></div>
+  <div class="map-box">妊娠中の方は医師に相談を</div>
+</div>
+<div class="map-type-label" style="color:#556b2f">論理の流れ｜補足</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2c6e49">96</div>
+    <div class="q-cat-tag" style="color:#2c6e49;border-color:#2c6e49">逆接</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">スマートフォンは日常生活をとても便利にしてくれる。<span class="blank-box">　　　</span>、長時間使いすぎると視力の低下や睡眠の質の悪化につながることもある。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2c6e49;font-weight:700;font-size:1.1em">しかし</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「便利」という利点に対し、「健康への悪影響」という問題点が続く逆接。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">日常生活をとても便利にする</div>
+  <div class="map-arrow">→‖←<br><span class="map-conn">しかし</span></div>
+  <div class="map-box">長時間使用で視力低下や睡眠悪化も</div>
+</div>
+<div class="map-type-label" style="color:#2c6e49">論理の流れ｜逆接</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#c0392b">97</div>
+    <div class="q-cat-tag" style="color:#c0392b;border-color:#c0392b">条件・制限</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">当図書館の本はどなたでも貸し出しができます。<span class="blank-box">　　　</span>、雑誌と新聞の貸し出しは行っておりません。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="false"><span class="opt-label">ア</span><span class="opt-text">ア順接・因果（だから・そのため）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">イ逆接（しかし・だが）</span></div><div class="opt-item" data-correct="true"><span class="opt-label">ウ</span><span class="opt-text">ウ条件・制限（ただし・もっとも）</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">エ転換（さて・ところで）</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#c0392b;font-weight:700;font-size:1.1em">ウ：ウ条件・制限（ただし・もっとも）</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「全員貸し出し可」という内容を認めたうえで、例外となる制限を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">どなたでも貸し出しできる</div>
+  <div class="map-arrow">→条<br><span class="map-conn">ただし</span></div>
+  <div class="map-box">雑誌と新聞は貸し出し不可</div>
+</div>
+<div class="map-type-label" style="color:#c0392b">論理の流れ｜条件・制限</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#e05c3a">98</div>
+    <div class="q-cat-tag" style="color:#e05c3a;border-color:#e05c3a">順接・因果</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">適度な運動を続けると、心肺機能が向上する。<span class="blank-box">　　　</span>、疲れにくい体になり、日常生活での活動量も増えやすくなる。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">そのため</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">たとえば</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#e05c3a;font-weight:700;font-size:1.1em">そのため</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「心肺機能向上（原因）→疲れにくい体・活動量増加（結果）」という順接の因果関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">心肺機能が向上する</div>
+  <div class="map-arrow">→<br><span class="map-conn">そのため</span></div>
+  <div class="map-box">疲れにくい体になり活動量も増えやすい</div>
+</div>
+<div class="map-type-label" style="color:#e05c3a">論理の流れ｜順接・因果</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#4a7c7e">99</div>
+    <div class="q-cat-tag" style="color:#4a7c7e;border-color:#4a7c7e">転換</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">先月の旅行の話はここまでにします。<span class="blank-box">　　　</span>、最近読んだ本についてお話ししたいと思います。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">さて</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">また</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#4a7c7e;font-weight:700;font-size:1.1em">さて</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">旅行の話から読書という別の話題に切り替えている転換の関係。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">旅行の話が終わる</div>
+  <div class="map-arrow">↩<br><span class="map-conn">さて</span></div>
+  <div class="map-box">最近読んだ本の話題へ</div>
+</div>
+<div class="map-type-label" style="color:#4a7c7e">論理の流れ｜転換</div>
+    </div></div>
+  </div>
+</div>
+<div class="q-card">
+  <div class="q-head">
+    <div class="q-num-badge" style="background:#2e6fa3">100</div>
+    <div class="q-cat-tag" style="color:#2e6fa3;border-color:#2e6fa3">添加</div>
+  </div>
+  <div class="q-body">
+    <div class="q-text">日本の伝統文化には、茶道や剣道など礼儀を重んじるものが多い。<span class="blank-box">　　　</span>、俳句や書道など、自然や美を表現する芸術的な文化も豊かに残っている。</div>
+    <div class="opts-wrap"><div class="opt-item" data-correct="true"><span class="opt-label">ア</span><span class="opt-text">また</span></div><div class="opt-item" data-correct="false"><span class="opt-label">イ</span><span class="opt-text">しかし</span></div><div class="opt-item" data-correct="false"><span class="opt-label">ウ</span><span class="opt-text">だから</span></div><div class="opt-item" data-correct="false"><span class="opt-label">エ</span><span class="opt-text">つまり</span></div></div>
+    <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+      <span class="toggle-icon">＋</span>
+      <span class="toggle-text">答えを見る</span>
+      <span class="toggle-hint">タップで開閉</span>
+    </button>
+    <div class="answer-box"><div class="answer-inner">
+      <div class="answer-model">
+        <div class="answer-label">解答</div>
+        <div class="answer-text" style="color:#2e6fa3;font-weight:700;font-size:1.1em">また</div>
+      </div>
+      <div class="advice-box">
+        <div class="advice-label">解説</div>
+        <div class="flow-point">「礼儀の文化」に続けて「芸術の文化」という同方向の日本文化の特徴を付け加えている。</div>
+      </div>
+      <div class="logic-map">
+  <div class="map-box">礼儀を重んじる伝統文化が多い</div>
+  <div class="map-arrow">→＋<br><span class="map-conn">また</span></div>
+  <div class="map-box">自然や美を表現する芸術的な文化も豊か</div>
+</div>
+<div class="map-type-label" style="color:#2e6fa3">論理の流れ｜添加</div>
+    </div></div>
+  </div>
+</div>
+</div><!-- /panel-5 -->
+
+</main>
+<script>
+function showPanel(n, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.getElementById('panel-' + n).classList.add('active');
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleAnswer(btn) {
+  const box = btn.nextElementSibling;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!open));
+  btn.querySelector('.toggle-text').textContent = open ? '答えを見る' : '閉じる';
+  box.classList.toggle('open', !open);
+}
+</script>
+</body>
+</html>
