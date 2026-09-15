@@ -1,0 +1,3158 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>星組メソッドライブラリ｜指示語 何を指すか 100問</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700;900&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --serif:"Noto Serif JP",serif;
+  --sans:"BIZ UDPGothic","Hiragino Kaku Gothic ProN",sans-serif;
+  --bg:#f5f8f4;--card:#fff;--border:#d8e4d8;
+  --green:#2c6e49;--dark:#1a2e1a;--mid:#3d5c3d;--light:#6b8f6b;
+  --gold:#c8a84b;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--dark);min-height:100vh}
+.site-header{background:linear-gradient(135deg,#0d1f0d 0%,#1a3a1a 60%,#2c5c2c 100%);padding:20px 16px 16px;text-align:center}
+.brand{font-family:var(--serif);font-size:.72em;color:rgba(255,255,255,.6);letter-spacing:.12em;margin-bottom:4px}
+.main-title{font-family:var(--serif);font-size:1.3em;color:#fff;font-weight:900;letter-spacing:.05em;line-height:1.3}
+.sub-title{font-size:.75em;color:var(--gold);margin-top:4px;letter-spacing:.06em}
+nav{background:#fff;border-bottom:2px solid var(--green);position:sticky;top:0;z-index:100}
+.series-tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.series-tabs::-webkit-scrollbar{display:none}
+.stab{flex:0 0 auto;min-width:80px;padding:10px 8px 8px;border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;font-family:var(--sans);color:var(--light);transition:.2s;text-align:center}
+.stab.active{border-bottom-color:var(--green);color:var(--dark);font-weight:700}
+.stab-icon{display:block;font-size:1.3em;line-height:1}
+.stab-label{display:block;font-size:.62em;line-height:1.4;margin-top:2px}
+.panel{display:none;padding:12px 12px 40px;max-width:680px;margin:0 auto}
+.panel.active{display:block}
+.series-head{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:14px;margin-bottom:14px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.series-icon{font-size:2em;line-height:1;flex-shrink:0}
+.series-num{font-family:var(--serif);font-size:.85em;color:var(--green);font-weight:700}
+.series-count{font-size:.75em;color:var(--light);margin-top:2px}
+.q-card{background:var(--card);border-radius:12px;border:1px solid var(--border);margin-bottom:12px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.05)}
+.q-head{display:flex;align-items:center;gap:10px;padding:11px 14px 9px}
+.q-num-badge{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;color:#fff;background:var(--green);flex-shrink:0}
+.q-shiji-tag{font-size:.82em;font-weight:700;color:var(--dark)}
+.shiji-word{font-family:var(--serif);font-size:1.1em;color:var(--green);font-weight:900;border-bottom:2px solid var(--green)}
+.q-body{padding:0 14px 14px}
+.q-text{font-family:var(--serif);font-size:.96em;line-height:1.9;margin-bottom:10px;border-top:1px solid var(--border);padding-top:11px}
+.shiji-q{font-weight:900;border-bottom:3px solid var(--green);color:var(--green);font-size:1.05em}
+.mondai-q{font-size:.82em;font-weight:700;color:var(--mid);margin-bottom:10px;padding:6px 10px;background:#f0f6f0;border-radius:6px;border-left:3px solid var(--green)}
+.toggle-btn{width:100%;padding:10px;border:1.5px solid var(--green);border-radius:8px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:var(--sans);font-size:.85em;color:var(--mid);font-weight:700;transition:.2s}
+.toggle-btn:hover{background:#f0f6f0}
+.toggle-icon{font-size:1.1em;transition:transform .2s}
+.toggle-btn[aria-expanded="true"] .toggle-icon{transform:rotate(45deg)}
+.toggle-hint{font-size:.72em;color:var(--light);font-weight:400}
+.answer-box{display:grid;grid-template-rows:0fr;overflow:hidden;transition:grid-template-rows .3s ease}
+.answer-box.open{grid-template-rows:1fr}
+.answer-inner{overflow:hidden}
+.answer-model{padding:14px 14px 8px}
+.answer-label{font-size:.7em;color:var(--light);font-weight:700;letter-spacing:.08em;margin-bottom:4px}
+.answer-text{font-family:var(--serif);font-size:1.05em;line-height:1.6;color:var(--green);font-weight:700}
+.step-box{background:#f0f6f0;border-top:1px solid var(--border);padding:10px 14px}
+.step-label{font-size:.72em;font-weight:700;color:var(--green);margin-bottom:6px}
+.step-item{display:flex;gap:8px;margin-bottom:6px;align-items:flex-start}
+.step-item:last-child{margin-bottom:0}
+.step-num{font-size:.75em;font-weight:700;color:#fff;background:var(--green);border-radius:50%;width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:.84em;line-height:1.6;color:var(--mid)}
+.wrong-box{background:#fff5f5;border-top:1px solid #f0d0d0;padding:8px 14px 12px}
+.wrong-label{font-size:.7em;font-weight:700;color:#c0392b;margin-bottom:4px}
+.wrong-text{font-size:.82em;color:#8b3030;line-height:1.6}
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div class="brand">星組メソッドライブラリ</div>
+  <div class="main-title">指示語「何を指すか」100問</div>
+  <div class="sub-title">こそあど言葉の照応先を直感的につかむ</div>
+</header>
+<nav>
+  <div class="series-tabs" role="tablist">
+    <button class="stab active" role="tab" aria-selected="true" onclick="showPanel(1,this)">
+      <span class="stab-icon">①</span><span class="stab-label">第1セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(2,this)">
+      <span class="stab-icon">②</span><span class="stab-label">第2セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(3,this)">
+      <span class="stab-icon">③</span><span class="stab-label">第3セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(4,this)">
+      <span class="stab-icon">④</span><span class="stab-label">第4セット<br>全20問</span>
+    </button>
+<button class="stab" role="tab" aria-selected="false" onclick="showPanel(5,this)">
+      <span class="stab-icon">⑤</span><span class="stab-label">第5セット<br>全20問</span>
+    </button>
+
+  </div>
+</nav>
+<main>
+<div id="panel-1" class="panel active" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">①</div>
+    <div class="series-info">
+      <div class="series-num">指示語「何を指すか」— 第1セット</div>
+      <div class="series-count">全20問</div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">1</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">となりの家では、毎年春になると大きなボタンの花が咲く。今年もその花が開き始めると、母は窓から身を乗り出して、「<span class="shiji-q">それ</span>、今年も見事ね」とつぶやいた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">大きなボタンの花</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「今年も見事ね」→褒めている対象が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「大きなボタンの花、今年も見事ね」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「となりの家」→場所であって花そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">2</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">祖父はずっと愛用している一本の万年筆を持っている。インクがなくなるたびに丁寧に補充し、何十年も<span class="shiji-q">それ</span>を使い続けている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">万年筆</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を使い続けている」→使い続ける道具が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「万年筆を何十年も使い続けている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「インク」→補充する材料であって使い続ける道具ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">3</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">校庭の端に、古びた木製のベンチがある。卒業生が在学中に作ったものだと聞いた。休み時間になると、<span class="shiji-q">それ</span>に座って空を眺める生徒が必ずいる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古びた木製のベンチ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「に座って空を眺める」→座ることができる物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古びた木製のベンチに座って空を眺める」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「校庭」→場所であってベンチではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">4</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">兄は去年の冬、手編みのマフラーを作った。青と白の縞模様で、とても暖かそうだった。今年の冬も、<span class="shiji-q">それ</span>を首に巻いて出かけている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">手編みのマフラー</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を首に巻いて出かける」→首に巻く物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「手編みのマフラーを首に巻いて出かけている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「冬」→季節であって巻く物ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">5</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">砂漠に生えるサボテンは、茎の中に大量の水をためることができる。雨がほとんど降らない環境でも、<span class="shiji-q">それ</span>を使って長期間生き延びる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（茎の中にためた）水</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を使って生き延びる」→生存に使う資源が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「茎にためた水を使って長期間生き延びる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「茎」→水をためる器官であって使う資源ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">6</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">その</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">川のほとりに、百年以上前に植えられた柳の木がある。枝が水面に垂れ下がり、風に揺れる姿が美しい。<span class="shiji-q">その</span>木の根元には、地元の人が手向けた小さな石碑があった。</div>
+      <div class="mondai-q">「その」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">柳の木</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「その」は直前に出てきた物を修飾する。「その木」→直前の柳の木を指している。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「柳の木の根元には小さな石碑があった」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「川」→場所であって木そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">7</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">海岸で拾った一枚の貝殻は、うすくて半透明で、光に透かすと内側がほんのり虹色に輝いた。家に持ち帰り、窓際に置くと、<span class="shiji-q">それ</span>は朝の光を受けてきれいに輝いた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">貝殻</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「は朝の光を受けて輝いた」→光を受けて輝く物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「貝殻は朝の光を受けてきれいに輝いた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「海岸」→場所であって貝殻ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">8</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">先生は授業の始めに、黒板の端に小さな詩を書いた。その日の内容に関係した短い詩で、生徒たちは毎回<span class="shiji-q">それ</span>を読んでから授業に入ることを楽しみにしていた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さな詩</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を読んでから授業に入る」→読むことができる文章が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さな詩を読んでから授業に入ることを楽しみにしていた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「黒板」→詩が書かれている場所であって詩そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">9</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">このあたりの山には、昔から「霧の湖」と呼ばれる小さな湖がある。朝になると水面から霧が立ち上り、幻想的な景色を作り出す。地元の人々は<span class="shiji-q">それ</span>を大切に守ってきた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「霧の湖」（と呼ばれる小さな湖）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を大切に守ってきた」→守る対象の湖が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「霧の湖を大切に守ってきた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「霧」→湖から立ち上るものであって守る対象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">10</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">父は毎朝、豆から自分でコーヒーを挽く。専用のミルで丁寧に挽いた豆の粉から、香り高いコーヒーをいれる。<span class="shiji-q">それ</span>が父の一日の始まりの儀式だ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">豆から自分でコーヒーを挽くこと（コーヒーをいれること）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた事がらを指す。直後「が父の一日の始まりの儀式だ」→毎朝の習慣全体が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「コーヒーを自分で挽いていれることが父の一日の始まりの儀式だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「豆」→材料であって儀式そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">11</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">この地域では、毎年八月に大きな盆踊り大会が開かれる。百年以上前から続く伝統的な行事で、<span class="shiji-q">それ</span>には県外からも多くの人が集まってくる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">大きな盆踊り大会</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた事がらを指す。直後「には県外からも多くの人が集まる」→人が集まる行事が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「大きな盆踊り大会には県外からも多くの人が集まってくる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「八月」→時期であって行事そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">12</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ある研究によると、植物は傷つけられたとき、周囲の植物に化学物質を放出して危険を知らせるという。<span class="shiji-q">それ</span>を受け取った植物は、害虫への抵抗力を高めることができる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">化学物質</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を受け取った植物が抵抗力を高める」→植物が受け取る信号物質が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「化学物質を受け取った植物は抵抗力を高めることができる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「傷つけられたとき」→状況であって受け取る物ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">13</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">その</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">駅の近くに、地元では「赤レンガ館」と呼ばれている古い建物がある。明治時代に建てられたもので、今は文化施設として使われている。<span class="shiji-q">その</span>建物の前には、いつも観光客が写真を撮りに来ている。</div>
+      <div class="mondai-q">「その」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">「赤レンガ館」と呼ばれている古い建物</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「その」は直前に出てきた物を修飾する。「その建物」→直前の赤レンガ館のことを指している。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「赤レンガ館の前には観光客が写真を撮りに来ている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「駅」→建物がある近くの場所であって建物そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">14</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">真冬の早朝、窓ガラスの内側に美しい模様が広がっていた。水蒸気が冷えて結晶になったもので、氷の花とも呼ばれる。なつきは<span class="shiji-q">それ</span>を指でそっとなぞった。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">窓ガラスの内側に広がった（氷の）模様</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を指でそっとなぞった」→なぞれる表面の模様が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「窓ガラスの氷の模様を指でそっとなぞった」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「窓ガラス」→模様が広がる面であって模様そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">15</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">海の深いところに住む深海魚の中には、自分の体を発光させることができる種類がいる。暗闇の中で<span class="shiji-q">それ</span>を使って獲物をおびき寄せたり、仲間と信号を送り合ったりする。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（自分の体を）発光させる（こと）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「を使って獲物をおびき寄せる」→暗闇で活用する能力が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「体を発光させる能力を使って獲物をおびき寄せる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「深海魚」→生き物であって使う能力ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">16</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">図書室の窓際に、一つの水槽がある。中には色鮮やかな熱帯魚が何匹も泳いでいる。委員会の生徒たちが交代で<span class="shiji-q">それ</span>の世話をしている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">水槽（の中の熱帯魚）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「の世話をしている」→世話をする対象が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「水槽の世話を委員会の生徒たちがしている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「図書室」→場所であって世話をする対象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">17</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">山の斜面に広がるお茶畑では、毎年五月に新芽が芽吹く。この時期に摘まれた新芽から作るお茶を「一番茶」と呼び、<span class="shiji-q">それ</span>は香りが高く、最も高い値がつく。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">一番茶</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「は香りが高く最も高い値がつく」→価値の高いお茶が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「一番茶は香りが高く、最も高い値がつく」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「新芽」→お茶を作る材料であって製品そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">18</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">空気中の二酸化炭素は、植物が光合成を行うときに吸収される。植物はこのガスと水と光を使って糖を作り出し、<span class="shiji-q">それ</span>を成長のエネルギー源にしている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">糖</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「を成長のエネルギー源にしている」→エネルギー源となる物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「糖を成長のエネルギー源にしている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「二酸化炭素」「水」「光」→糖を作るための材料であってエネルギー源そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">19</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">江戸時代の人々は、夜の明かりとして行灯を使っていた。油を燃やして明かりを取るこの道具は、当時の家庭に欠かせないものだった。<span class="shiji-q">それ</span>が電灯に取って代わられるのは、明治時代に入ってからのことだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">行灯</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物を指す。直後「が電灯に取って代わられる」→電灯に置き換えられた照明器具が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「行灯が電灯に取って代わられるのは明治時代のことだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「油」→行灯を燃やす材料であって道具そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">20</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">春になると、ツバメが遠く南の国からやってくる。毎年同じ家の軒下に巣を作り、ひなを育てる。秋には<span class="shiji-q">それ</span>を繰り返しながら南へと帰っていく。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">巣を作りひなを育てること</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた事がらを指す。直後「を繰り返しながら」→毎年行う一連の行動が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「巣を作りひなを育てることを繰り返しながら南へ帰る」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ツバメ」→行動の主体であって繰り返す行動そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-1 -->
+<div id="panel-2" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">②</div>
+    <div class="series-info">
+      <div class="series-num">指示語「何を指すか」— 第2セット</div>
+      <div class="series-count">全20問</div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">21</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">川を上流に向かって歩くと、岩に囲まれた小さな淵に出た。水が深く澄んでいて、底まで見通せる。夏になると地元の子どもたちが<span class="shiji-q">そこ</span>へ泳ぎに来る。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">岩に囲まれた小さな淵</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「へ泳ぎに来る」→泳ぎに行く場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「岩に囲まれた小さな淵へ泳ぎに来る」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「川」→淵がある水辺全体であって淵そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">22</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">旅人は砂漠を歩き続け、ようやく小さなオアシスにたどり着いた。ヤシの木が数本立ち、清らかな水が湧いていた。<span class="shiji-q">そこ</span>で旅人は水を飲み、木陰で休んだ。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さなオアシス</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「で水を飲み木陰で休んだ」→休憩した場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さなオアシスで旅人は水を飲み木陰で休んだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「砂漠」→歩いてきた場所であってたどり着いた先ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">23</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">山の頂上近くには、古い山小屋がある。登山者が嵐のときに避難したり、一泊して翌朝の景色を楽しんだりする。<span class="shiji-q">そこ</span>には、訪れた人のサインが書き込まれたノートが大切に保管されている。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古い山小屋</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「には訪れた人のサインが保管されている」→ノートが保管されている場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古い山小屋には訪れた人のサインが書き込まれたノートがある」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「山の頂上近く」→山小屋がある大きな範囲であって山小屋そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">24</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">父は古い地図を広げ、一点を指さした。「<span class="shiji-q">ここ</span>が、お祖父さんが生まれた村だよ。今はもう地図上にしか残っていない。」私はその場所をしばらく見つめていた。</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（お祖父さんが生まれた）村</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」は話者が指さしている場所を指す。直後「がお祖父さんが生まれた村だよ」→指さした地図上の場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「お祖父さんが生まれた村が、今は地図上にしか残っていない」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「地図」→場所が描かれている物であって場所そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">25</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">転勤して来たばかりの新しい先生が、教室の窓から外を見ながら言った。「<span class="shiji-q">ここ</span>からは、天気がいい日に山が見えるんですね。すばらしい眺めだ。」生徒たちは誇らしそうに頷いた。</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（この）教室</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」は話者が今いる場所を指す。先生が教室の窓から外を見ながら話しているので、今いる教室が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「この教室からは天気がいい日に山が見える」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「窓」→教室の一部であって場所そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">26</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">祖母は古いアルバムのページをめくりながら言った。「<span class="shiji-q">ここ</span>ね、昔はにぎやかな商店街だったのよ。八百屋に魚屋に和菓子屋が並んでいたわ。」写真には、今は空き地になった場所が映っていた。</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（昔ににぎやかだった）商店街（があった場所）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」は話者が写真で指している場所を指す。直後「昔はにぎやかな商店街だった」→写真に映った場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「商店街だった場所には、昔八百屋や魚屋が並んでいた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「アルバム」→写真が入っている物であって場所そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">27</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あそこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">この辺りには、子どものころに毎年お祭りが立った広場があった。焼きとうもろこしや金魚すくいの屋台が並び、にぎわったものだ。「ねえ、<span class="shiji-q">あそこ</span>、今はマンションになっているね」と母が言った。</div>
+      <div class="mondai-q">「あそこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（お祭りが立った）広場</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あそこ」は話し手・聞き手の両方が知っている場所（あ系）を指す。母と聞き手の両方が知っている過去の場所。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「お祭りが立った広場は、今はマンションになっている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「マンション」→今の状態であって2人が思い出している当時の場所ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">28</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あれ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">駅のホームに古いロッカーがあった。何十年も前から使われているもので、扉には細かい傷や汚れが積み重なっている。「<span class="shiji-q">あれ</span>、小学生のころに荷物を入れて遠足に行ったよね」とゆかりは友人に言った。</div>
+      <div class="mondai-q">「あれ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古いロッカー</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あれ」は話し手・聞き手の両方が知っている物（あ系）を指す。ゆかりと友人の両方が知っているロッカー。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古いロッカーに荷物を入れて遠足に行ったよね」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ホーム」→ロッカーがある場所であってロッカーそのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">29</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あの</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">二人は橋の上から川下を眺めていた。川沿いに古い水車がゆっくりと回っているのが見えた。「<span class="shiji-q">あの</span>水車、子どものころはもっと元気よく回っていたね」とたかしは言った。</div>
+      <div class="mondai-q">「あの」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古い水車</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あの」は話し手・聞き手の両方が今見えている物（あ系）を修飾する。2人とも今見えている水車。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古い水車、子どものころはもっと元気よく回っていたね」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「橋」→眺めている場所であって水車ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">30</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">バスに乗って山道を上ると、霧に包まれた展望台に着いた。晴れた日には海まで見渡せる場所だという。<span class="shiji-q">そこ</span>から見えるはずの景色を想像しながら、みんなで記念写真を撮った。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">展望台</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「から見えるはずの景色を想像した」→景色を眺める場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「展望台から見えるはずの景色を想像しながら写真を撮った」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「バス」→乗り物であって場所ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">31</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">おじいさんは畑のまん中に立って、空を見上げながら言った。「<span class="shiji-q">ここ</span>の土は、五十年かけて育てたものだ。石ころだらけだった荒れ地が、今ではこんなにやわらかくなった。」</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（この）畑（の土）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」は話者が今いる場所を指す。おじいさんが畑のまん中に立って話しているので、今いる畑が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「この畑の土は、五十年かけて育てたものだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「石ころ」→昔の状態であって今の畑そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">32</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">岬の先端にある小さな灯台は、百年以上前に建てられたものだ。霧の夜でも船が安全に進めるよう、光を回し続けている。今も漁師たちは<span class="shiji-q">そこ</span>の光を頼りに港へ帰ってくる。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さな灯台</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「の光を頼りに港へ帰る」→光の発信源である場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さな灯台の光を頼りに港へ帰ってくる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「岬」→灯台がある大きな範囲であって灯台そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">33</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あそこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">二人は学校の屋上から町を見下ろした。遠くに古い映画館の建物が見えた。もう営業はしていないが、外観はそのまま残っている。「<span class="shiji-q">あそこ</span>で一緒に映画を見たね」とさくらは言った。</div>
+      <div class="mondai-q">「あそこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古い映画館</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あそこ」は話し手・聞き手の両方が知っている場所（あ系）を指す。さくらと相手の両方が知っている映画館。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古い映画館で一緒に映画を見たね」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「屋上」→2人が今いる場所であって映画を見た場所ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">34</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">徒歩で山を越えると、谷あいに昔ながらの小さな集落があった。石畳の路地に古い家屋が並ぶ、静かな場所だ。<span class="shiji-q">そこ</span>では、今も昔と変わらぬ暮らしが続いているという。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">昔ながらの小さな集落</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「では昔と変わらぬ暮らしが続いている」→昔ながらの暮らしが残る場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「昔ながらの小さな集落では、今も昔と変わらぬ暮らしが続いている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「谷あい」→集落がある広い地形であって集落そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">35</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">博物館のガイドが一枚の古地図の前で立ち止まり、説明した。「<span class="shiji-q">ここ</span>に描かれているのが、この町の江戸時代の姿です。今とはずいぶん形が違いますね。」</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（古地図に描かれた）この町の江戸時代の姿（がある場所）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」はガイドが今指している地図上の場所を指す。直後「に描かれているのがこの町の江戸時代の姿」→指さした地図の箇所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「この地図のここに、町の江戸時代の姿が描かれている」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「博物館」→場所全体であって地図上の一点ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">36</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">駅から歩いて十分ほどのところに、小さな書店がある。専門書から児童書まで幅広い本をそろえた店で、棚の隅々まで丁寧に管理されている。<span class="shiji-q">そこ</span>には常連客が多く、店主と本について語り合う光景がよく見られる。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さな書店</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「には常連客が多く」→常連客が集まる場所が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さな書店には常連客が多く、店主と語り合う光景がよく見られる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「駅」→出発点となる場所であって書店ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">37</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あれ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">二人は公園のベンチに座っていた。池のほとりに古い石の灯ろうが立っている。「<span class="shiji-q">あれ</span>、昔はお祭りのときに火がともっていたんだよ」と祖父は孫に言った。</div>
+      <div class="mondai-q">「あれ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古い石の灯ろう</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あれ」は話し手・聞き手の両方が見えている物（あ系）を指す。祖父と孫の両方が今見えている灯ろう。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古い石の灯ろうは、昔お祭りのときに火がともっていた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「池」→灯ろうがある場所であって灯ろうそのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">38</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">ここ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">料理教室の先生が鍋の前に立ち、生徒たちに言った。「<span class="shiji-q">ここ</span>で一度火を止めて、よくかき混ぜてください。そうするとなめらかに仕上がります。」</div>
+      <div class="mondai-q">「ここ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（鍋の中、または）この段階・このタイミング</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「ここ」は話者が示している工程の場所・タイミングを指す。調理の「この段階」という意味で使われている。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「この段階で一度火を止めてかき混ぜるとなめらかに仕上がる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「鍋」→道具であって調理のタイミングではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">39</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">そこ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">図書館の地下に、古い新聞や雑誌が保管されている特別な部屋がある。普段は立ち入れないが、許可を得れば閲覧できる。研究者たちは<span class="shiji-q">そこ</span>に通いつめて、歴史的な資料を調べる。</div>
+      <div class="mondai-q">「そこ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（古い新聞や雑誌が保管されている）特別な部屋</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「そこ」は前に出てきた場所を指す。直後「に通いつめて資料を調べる」→資料が保管されている部屋が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「特別な部屋に研究者たちが通いつめて資料を調べる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「図書館」→部屋が入っている建物であって特別な部屋そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">40</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">あの</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">二人は海岸を散歩していると、沖に小さな島の影が見えた。「<span class="shiji-q">あの</span>島、昔は渡し船で行けたって聞いたことがある」とひろこは言った。</div>
+      <div class="mondai-q">「あの」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さな島</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「あの」は話し手・聞き手の両方に見えている物（あ系）を修飾する。2人とも今見えている島。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さな島は昔、渡し船で行けたと聞いた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「海岸」→2人が歩いている場所であって島ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-2 -->
+<div id="panel-3" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">③</div>
+    <div class="series-info">
+      <div class="series-num">指示語「何を指すか」— 第3セット</div>
+      <div class="series-count">全20問</div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">41</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">シロアリは木材の内部をかじって巣を作る。建物の柱や床板をひそかに食いつくし、外からは気づきにくい。<span class="shiji-q">それ</span>が問題なのは、被害が深刻になってから初めて発見されることが多いからだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（シロアリが内部をかじって）外からは気づきにくいこと</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた事がらを指す。直後「が問題なのは」→問題とされている性質が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「外からは気づきにくいことが問題で、被害が深刻になってから発見されることが多い」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「シロアリ」→生き物であって問題とされている性質ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">42</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、ものが燃えるときに酸素と結びついて熱と光を発する化学変化のことだ。マッチや花火もこの現象を利用しており、私たちの暮らしの中に欠かせない。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">ものが燃えるときに酸素と結びついて熱と光を発する化学変化（燃焼）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。「これ」が指すのは後ろの説明内容。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「燃焼は、酸素と結びついて熱と光を発する化学変化だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「マッチ」「花火」→現象を利用した具体例であって現象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">43</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ピアノを弾く人の指は、長年の練習によって特定の動きに適応していく。速い曲を弾くとき、意識しなくても指が正確に鍵盤の上を走る。<span class="shiji-q">それ</span>は、体が動きを記憶したからだといわれている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">意識しなくても指が正確に動くこと</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「は体が動きを記憶したからだ」→理由が説明されている対象の事がらが照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「意識しなくても指が正確に動くのは、体が動きを記憶したからだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ピアノ」→楽器であって体の変化ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">44</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">南極の氷は、古い時代の空気をそのまま閉じ込めている。何十万年も前の大気の成分を分析することができ、過去の気候変動を知る手がかりになる。<span class="shiji-q">それ</span>によって、将来の気候変動を予測する研究が進んでいる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（南極の氷から）過去の気候変動を知ること</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「によって将来の気候変動を予測する研究が進む」→予測研究の根拠となる分析が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「過去の気候変動を知ることによって、将来の気候変動を予測する研究が進んでいる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「南極の氷」→手がかりとなる物であって分析から得られる知識ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">45</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、植物の葉や茎が太陽の光の方向に向かって曲がっていく現象のことだ。窓際に置いた観葉植物が時間をかけて窓の方向に傾いていくのも、同じしくみで説明できる。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">植物が太陽の光の方向に曲がっていく現象（屈光性・光屈性）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「光屈性は、植物が太陽の方向に曲がっていく現象だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「観葉植物」→具体例として挙げられた植物であって現象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">46</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">チーターは陸上で最も速く走れる動物で、最高時速は約百十キロに達する。しかしそのスピードを維持できるのはわずか数百メートルで、すぐに疲れてしまう。<span class="shiji-q">それ</span>を補うために、チーターは体力を温存しながら獲物に近づき、一気に加速する狩りのやり方をとる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（短い距離しかスピードを維持できないという）弱点</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「を補うために」→補う対象の弱点が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「弱点を補うために、体力を温存しながら近づき一気に加速する」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「チーター」→生き物であって補う弱点ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">47</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">潮の満ち引きは、月の引力によって起こる。月が地球の海水を引きつけることで、月に近い側と反対側で海面が盛り上がる。<span class="shiji-q">それ</span>が地球の自転によって繰り返されることで、一日に二回の満潮と干潮が生じる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">海面が盛り上がること（潮の満ち引きが起こる現象）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「が地球の自転によって繰り返される」→繰り返される現象が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「海面が盛り上がることが地球の自転によって繰り返され、満潮と干潮が生じる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「月」→引力の源であって繰り返される現象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">48</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、体の中でタンパク質や脂肪などの栄養素が必要以上に蓄積されることで引き起こされる状態のことだ。運動不足や食べ過ぎが続くと、そのリスクが高まるとされている。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">タンパク質や脂肪などが必要以上に蓄積される状態（肥満）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「肥満は、栄養素が必要以上に蓄積されることで引き起こされる状態だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「運動不足」「食べ過ぎ」→リスクを高める原因であって状態そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">49</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">人間の体の中には、外から入ってきた病原体を攻撃して体を守るしくみがある。このしくみは「免疫」と呼ばれる。<span class="shiji-q">それ</span>が弱まると、感染症にかかりやすくなってしまう。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">免疫（という体を守るしくみ）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前に出てきた物や事がらを指す。直後「が弱まると感染症にかかりやすい」→弱まると病気になる防御機能が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「免疫が弱まると、感染症にかかりやすくなる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「病原体」→体が攻撃する対象であって防御機能ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">50</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、水や空気などの流体が動くとき、速く動く部分ほど圧力が小さくなる性質のことだ。飛行機の翼の形はこの性質を利用して、上向きの力を生み出すよう設計されている。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">流体が速く動くほど圧力が小さくなる性質（ベルヌーイの原理）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。飛行機の翼はその応用例。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「ベルヌーイの原理は、流体が速く動くほど圧力が小さくなる性質だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「飛行機の翼」→性質を利用した具体例であって性質そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">51</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">カメは外敵に襲われると、頭と足を甲羅の中に引っ込める。甲羅は背骨や肋骨が変化してできた骨の板で、非常に頑丈だ。<span class="shiji-q">それ</span>によって、カメは捕食者から身を守ることができる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">頭と足を甲羅の中に引っ込めること</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「によってカメは捕食者から身を守れる」→身を守る手段が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「頭と足を甲羅に引っ込めることで、捕食者から身を守ることができる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「甲羅」→身を守るための構造物であって行動そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">52</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">江戸時代、各地の藩は独自の産業を育て、経済力を高めようとした。薩摩藩は砂糖、加賀藩は絹織物、土佐藩は木材などを特産品とした。<span class="shiji-q">それ</span>が各地域の文化や技術の発展につながっていった。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">独自の産業を育てたこと（特産品を持ったこと）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「が地域の文化や技術の発展につながった」→発展の原因となった取り組みが照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「独自の産業を育てたことが、各地域の文化や技術の発展につながった」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「薩摩藩」「加賀藩」→具体例として挙げられた藩であって取り組みそのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">53</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、食べ物に含まれる炭水化物が体内でブドウ糖に分解され、細胞のエネルギー源として使われる過程のことだ。激しい運動をすると、体がこの過程を急いで行うため、息が荒くなる。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">炭水化物がブドウ糖に分解されエネルギー源として使われる過程（糖代謝）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「糖代謝は、炭水化物がブドウ糖に分解されエネルギー源として使われる過程だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「炭水化物」→分解される材料であって過程そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">54</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ガラスは砂の主成分であるケイ砂を高温で溶かして作られる。冷えると透明で固い固体になり、光を通す性質がある。<span class="shiji-q">それ</span>を利用して、窓ガラスや眼鏡のレンズ、光ファイバーなどが作られる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">光を通す性質（がある）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「を利用して窓ガラスなどが作られる」→製品作りに利用されている性質が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「光を通す性質を利用して、窓ガラスや眼鏡のレンズが作られる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ケイ砂」→材料であって利用される性質ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">55</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">蚊が血を吸うとき、かゆみを感じさせない物質を同時に注入する。この物質は血が固まるのを防ぐ働きもある。<span class="shiji-q">それ</span>があるから、蚊は素早く血を吸って飛び去ることができる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">血が固まるのを防ぐ物質（かゆみを感じさせない物質）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の物を指す。直後「があるから蚊は素早く血を吸える」→蚊が効率よく吸血できる原因となる物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「血が固まるのを防ぐ物質があるから、蚊は素早く血を吸って飛び去ることができる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「かゆみ」→物質が引き起こす結果であって物質そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">56</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、川や海に流れ込んだプラスチックが紫外線や波の力によって細かく砕かれ、直径五ミリメートル以下になった粒のことだ。魚や鳥がそれを食べ物と間違えて食べてしまう問題が深刻になっている。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">川や海のプラスチックが細かく砕かれた直径5mm以下の粒（マイクロプラスチック）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「マイクロプラスチックは、プラスチックが細かく砕かれた5mm以下の粒だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「魚や鳥」→誤って食べてしまう生き物であって粒そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">57</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">日本の伝統工芸である漆器は、木の器に漆を何度も塗り重ねて作られる。この作業は乾燥と塗りを繰り返す根気のいる工程だ。<span class="shiji-q">それ</span>によって、美しい光沢と高い耐久性が生まれる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">乾燥と塗りを繰り返す作業（工程）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「によって美しい光沢と耐久性が生まれる」→漆器の美しさと丈夫さの原因が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「乾燥と塗りを繰り返すことによって、美しい光沢と耐久性が生まれる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「漆」→塗る材料であって繰り返す作業ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">58</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">気温が下がると、金属は収縮して体積が小さくなる。橋や線路には、温度変化による伸び縮みを吸収するための「伸縮継手」という隙間が設けられている。<span class="shiji-q">それ</span>がなければ、気温の変化によって構造物が変形したり壊れたりしてしまう。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">伸縮継手（という隙間）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の物を指す。直後「がなければ構造物が変形したり壊れたりする」→構造物を守るための部品が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「伸縮継手がなければ、気温の変化によって構造物が変形したり壊れたりしてしまう」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「気温」→変化の原因であって構造物を守る部品ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">59</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、電力や燃料を使わず、太陽の光や熱、風、水の流れなど自然のエネルギーを使って電気を作り出す方法のことだ。化石燃料と違って枯渇せず、二酸化炭素をほとんど出さない。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">太陽・風・水などの自然エネルギーを使って電気を作る方法（再生可能エネルギー）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「再生可能エネルギーは、自然のエネルギーを使って電気を作る方法だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「化石燃料」→対比として挙げられた別の方法であってこれが指すものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">60</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">渡り鳥は季節によって何千キロもの旅をする。磁場を感知する能力や太陽の位置を利用して方角を知り、正確に目的地へたどり着く。<span class="shiji-q">それ</span>がどのようなしくみで行われているか、まだ完全には解明されていない。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">何千キロもの旅をして正確に目的地へたどり着くこと（渡りのしくみ）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「がどのようなしくみで行われているか解明されていない」→謎とされている能力や行動が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「何千キロもの旅をして正確に目的地へたどり着くことが、どんなしくみで行われているか解明されていない」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「磁場」「太陽」→方角を知る手段として挙げられたものであって謎の対象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-3 -->
+<div id="panel-4" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">④</div>
+    <div class="series-info">
+      <div class="series-num">指示語「何を指すか」— 第4セット</div>
+      <div class="series-count">全20問</div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">61</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">机の上には古い地図帳と辞書が並んでいた。夏休みの自由研究で調べ物をしようと、たけしは<span class="shiji-q">それ</span>を手に取り、ページをめくり始めた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">地図帳（または辞書）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「ページをめくる」→本類の使い方。地図帳も辞書もページをめくるが、「調べ物」の文脈では地図帳がより自然。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「地図帳を手に取り、ページをめくり始めた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「机」→物が置かれている家具であってめくる対象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">62</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">庭には柿の木とキンモクセイが植えられていた。秋になり、<span class="shiji-q">それ</span>のあたりを歩いていると、どこからともなく甘い香りが漂ってきた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">キンモクセイ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「甘い香り」→秋に強い甘い香りを放つのはキンモクセイ。柿は香りでは知られない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「キンモクセイのあたりを歩いていると甘い香りが漂ってきた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「柿の木」→秋に実はなるが、甘い香りを放つ木ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">63</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">棚の上に懐中電灯とロウソクが置いてあった。停電になり、部屋が暗くなった。母は<span class="shiji-q">それ</span>を探してスイッチを押したが、電池が切れていた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">懐中電灯</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「スイッチを押した」「電池が切れていた」→懐中電灯の特徴。ロウソクにはスイッチも電池もない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「懐中電灯を探してスイッチを押したが電池が切れていた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ロウソク」→スイッチや電池があるものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">64</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">押し入れには古い将棋セットとオセロゲームが入っていた。雨の日の午後、弟は<span class="shiji-q">それ</span>を持ち出して、石を一枚一枚丁寧に並べ始めた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">オセロゲーム</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「石を一枚一枚並べる」→オセロの白黒の石を並べる動作。将棋は「石」ではなく「駒」を使う。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「オセロゲームを持ち出して、石を一枚一枚並べ始めた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「将棋セット」→将棋の駒は「石」とは呼ばない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">65</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">玄関のたたきには長靴と運動靴が並んでいた。雨が降り出したので、ゆいは急いで<span class="shiji-q">それ</span>を履いて飛び出した。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">長靴</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「雨が降り出した」→雨の日に履くのは長靴。運動靴は雨の日向きではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「長靴を履いて飛び出した」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「運動靴」→雨の日にわざわざ履き替える靴ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">66</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">テーブルの上に温かいスープと冷たいサラダが並んでいた。体が冷えていたので、りょうはまず<span class="shiji-q">それ</span>に手を伸ばし、一口飲んだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">温かいスープ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「体が冷えていた」「一口飲んだ」→冷えたときに飲む温かい飲み物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「温かいスープに手を伸ばし、一口飲んだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「冷たいサラダ」→体が冷えているときに選ぶものではなく、また「飲む」ものでもない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">67</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">引き出しにはセロハンテープとはさみが入っていた。包みをあけようとしたが、テープで端をしっかりと留めてあった。こうたは<span class="shiji-q">それ</span>を取り出してテープを切った。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">はさみ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「テープを切った」→切るための道具が照応先。セロハンテープは切る道具ではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「はさみを取り出してテープを切った」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「セロハンテープ」→留めるためのものであって切る道具ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">68</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ベランダには日よけのすだれと小さな扇風機が置いてあった。真夏の昼下がり、みゆきは<span class="shiji-q">それ</span>のスイッチを入れて、風を顔に受けながら本を読んだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">小さな扇風機</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「スイッチを入れた」「風を顔に受けた」→電気で動いて風を出す機械が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「小さな扇風機のスイッチを入れて、風を顔に受けながら本を読んだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「すだれ」→スイッチがなく風を出すものでもない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">69</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">机の引き出しには赤いマジックペンと鉛筆が入っていた。算数のテストが返ってきたので、はると は<span class="shiji-q">それ</span>を取り出して、間違えた問題に丸印をつけた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">赤いマジックペン</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。テストの採点や印つけには赤いペンを使うのが一般的。鉛筆で丸印をつける文脈ではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「赤いマジックペンを取り出して間違えた問題に丸印をつけた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「鉛筆」→テストの採点に使う道具としては不自然</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">70</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">冷蔵庫の中にアイスクリームとプリンが入っていた。熱を出して寝ていた妹が、「のど渇いた」と言うので、母は<span class="shiji-q">それ</span>を持ってきてあげた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">プリン</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「熱を出して寝ている」「のどが渇いた」→熱のときに向くのは冷たくてのどごしのよいプリン。アイスクリームは冷たすぎて向かない場合が多い。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「プリンを持ってきてあげた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「アイスクリーム」→熱があるときに食べるものとしては不自然</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">71</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">工作の材料として、折り紙と厚紙がテーブルに用意されていた。立体の箱を作るために、さなは<span class="shiji-q">それ</span>を切り取って、組み立てていった。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">厚紙</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「立体の箱を作る」「切り取って組み立てる」→しっかりした箱を作るには折り紙より厚紙が適している。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「厚紙を切り取って組み立てていった」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「折り紙」→薄く箱として組み立てるには強度が足りない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">72</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">窓辺には水草の入った水槽と小さな鉢植えのサボテンが置いてあった。一週間旅行から帰ってきたとき、<span class="shiji-q">それ</span>は水が干上がって枯れそうになっていた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">鉢植えのサボテン（または水草）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「水が干上がった」→土が乾いて水分がなくなった状態。水槽は水がなくなるとは言わず「干上がる」のは鉢植えの土。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「鉢植えのサボテンは水が干上がって枯れそうになっていた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「水槽」→「水が干上がる」という表現は水槽より鉢植えに自然</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">73</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">棚には木製のトレイと銀色のトレイが並んでいた。和菓子を盛りつけようと、母は<span class="shiji-q">それ</span>を選んで、お茶の隣に置いた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">木製のトレイ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「和菓子」「お茶」→和の雰囲気に合うのは木製。銀色のトレイは洋風の印象が強い。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「木製のトレイを選んで、お茶の隣に置いた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「銀色のトレイ」→和菓子とお茶に合わせるには不自然</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">74</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">かばんの中に折りたたみ傘と日傘が入っていた。朝は晴れていたが、昼過ぎから雨が降り出した。えりかは急いで<span class="shiji-q">それ</span>を取り出して開いた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">折りたたみ傘</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「雨が降り出した」→雨から守るために使うのは折りたたみ傘。日傘は雨よけとしては不十分。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「折りたたみ傘を取り出して開いた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「日傘」→日差しをよけるためのものであって雨よけには適さない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">75</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">冷蔵庫にはオレンジジュースと牛乳が入っていた。ケーキを焼くレシピを見ると、生地に加えるものとして指定されていたので、けいたは<span class="shiji-q">それ</span>を計量カップに注いだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">牛乳</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「ケーキの生地に加える」→ケーキのレシピには牛乳がよく使われる。オレンジジュースをケーキ生地に加えるのは一般的ではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「牛乳を計量カップに注いだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「オレンジジュース」→一般的なケーキの生地に使う材料ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">76</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">部屋のすみに古いギターとバイオリンが立てかけてあった。発表会の前日、みおは<span class="shiji-q">それ</span>を取り出して、最後の練習に取りかかった。弓を弦に当て、ゆっくりと音を出した。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">バイオリン</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「弓を弦に当てた」→弓を使って演奏するのはバイオリン。ギターは弦を指でつまびく。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「バイオリンを取り出して、弓を弦に当て音を出した」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ギター」→弓を使って演奏する楽器ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">77</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">押し入れには毛布と夏用の薄いタオルケットが重ねてあった。夜中に目が覚めると、とても寒かった。ようへいは<span class="shiji-q">それ</span>を引っ張り出して、体にかけた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">毛布</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「とても寒かった」→寒いときに体を温めるのは毛布。薄いタオルケットでは寒さに対応できない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「毛布を引っ張り出して体にかけた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「薄いタオルケット」→寒いときには保温力が不十分</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">78</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ペンケースの中に赤いボールペンと黒いボールペンが入っていた。手紙の宛名を書こうとして、あいりは<span class="shiji-q">それ</span>を取り出し、丁寧な字で相手の名前を書いた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">黒いボールペン</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「手紙の宛名を書く」→公式な手紙の宛名には黒のペンを使うのが一般的。赤は修正や強調に使われる色。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「黒いボールペンを取り出し、丁寧な字で名前を書いた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「赤いボールペン」→手紙の宛名を書くのに使う色としては不自然</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">79</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">テーブルの上に正方形のパズルと丸いコマが置いてあった。弟は<span class="shiji-q">それ</span>を手に取り、くるりとひねって床に放り投げた。勢いよく回り始めた。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">丸いコマ</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「ひねって床に放り投げると回り始めた」→コマを回す動作。パズルは回すものではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「丸いコマをひねって床に放り投げると勢いよく回り始めた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「正方形のパズル」→ひねって回すものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">80</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">薬箱には体温計と湿布薬が入っていた。運動会の練習で足首をひねってしまったので、かずきは<span class="shiji-q">それ</span>を患部に貼って、冷やした。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">湿布薬</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は文脈に合う方を指す。「患部に貼って冷やした」→けがの部位に貼って使うのは湿布薬。体温計は貼るものではない。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「湿布薬を患部に貼って冷やした」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「体温計」→体温を測るものであって患部に貼るものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-4 -->
+<div id="panel-5" class="panel" role="tabpanel">
+  <div class="series-head">
+    <div class="series-icon">⑤</div>
+    <div class="series-info">
+      <div class="series-num">指示語「何を指すか」— 第5セット</div>
+      <div class="series-count">全20問</div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">81</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ホタルイカは深海から浅い海へ上がってくる際、腹側にある発光器から青白い光を放つ。この光は仲間を集めるためや、外敵から身を守るためと考えられている。<span class="shiji-q">それ</span>を目当てに、春の富山湾では観光客が集まってくる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">ホタルイカ（が光を放つこと、またはホタルイカそのもの）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の主語を指す。直後「を目当てに観光客が集まる」→観光の目的となっている生き物が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「ホタルイカを目当てに、春の富山湾では観光客が集まる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「発光器」→光を出す器官であって観光客が見に来る対象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">82</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、空気が薄く温度の低い上空で、飛行機のエンジンから排出された水蒸気が瞬時に氷の粒になり、白い雲のように見える現象のことだ。晴れた日の青空に白い線として現れる。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">飛行機のエンジンの水蒸気が氷の粒になり白く見える現象（飛行機雲）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「飛行機雲は、水蒸気が氷の粒になり白く見える現象だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「青空」→飛行機雲が見える背景であって現象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">83</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ナマコは外敵に襲われると、体の内部の器官を口から吐き出すことがある。外敵の注意をそらすためだと考えられており、器官は後から再生される。<span class="shiji-q">それ</span>がナマコの独特の防衛術だ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">体の内部の器官を口から吐き出すこと</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「がナマコの独特の防衛術だ」→防衛のための行動が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「体の内部の器官を口から吐き出すことが、ナマコの独特の防衛術だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「外敵」→防衛の対象であって防衛術そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">84</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">土の中には無数の微生物が生きている。落ち葉や枯れ木、動物の死骸などを分解し、植物が吸収できる栄養素に変える働きをしている。<span class="shiji-q">それ</span>がなければ、地球上の生命の循環は成り立たない。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（落ち葉などを）分解して栄養素に変える働き（微生物の働き）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「がなければ生命の循環は成り立たない」→循環に不可欠な働きが照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「微生物が分解して栄養素に変える働きがなければ、生命の循環は成り立たない」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「土」→微生物が生きている場所であって働きそのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">85</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、生物が自らの体を傷つけたり死んだりすることなく、次の世代へと遺伝情報を伝える目的で行う生殖活動のことだ。親の特徴が子に受け継がれるのは、このしくみがあるからだ。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">自らを傷つけずに遺伝情報を次世代へ伝える生殖活動（有性生殖・繁殖）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「繁殖は、遺伝情報を次世代へ伝える生殖活動のことだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「遺伝情報」→伝える内容であって活動そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">86</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">鉄は酸素と水が同時に存在すると化学反応が起き、赤褐色のさびを生じる。さびが広がると鉄の強度は著しく低下する。橋や建物の鉄骨には定期的に塗装を施すことで<span class="shiji-q">それ</span>を防いでいる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">さびが生じること（さびの発生）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「を防いでいる」→防ぐ対象のさびの発生が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「さびが生じることを塗装を施すことで防いでいる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「鉄」→素材であって防ぐ対象の現象ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">87</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、一つの物体や空間の温度がある基準よりも高いか低いかを数字で表したものを指す概念だ。私たちが日常的に使う「摂氏」は水の沸点を百度、凍る点を零度として定めている。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">物体や空間の温度を数字で表した概念（温度・気温）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜を指す概念だ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「温度は、物体の温かさを数字で表した概念だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「摂氏」→温度を表す単位の一つであって概念そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">88</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">日本には四季があり、春になると各地で桜が咲き誇る。この光景を楽しむために公園や川沿いに多くの人が集まる。<span class="shiji-q">それ</span>を「お花見」といい、古くから日本人に愛されてきた文化だ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">桜を楽しむために公園や川沿いに人が集まること（お花見）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「をお花見といい、古くから愛されてきた文化だ」→日本の春の文化が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「桜の下に人が集まる光景をお花見といい、古くから愛されてきた」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「桜」→花そのものであって花見という行為ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">89</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">アリは体の大きさに比べて非常に強い力を持っており、自分の体重の数十倍もある物を持ち上げることができる。<span class="shiji-q">それ</span>は、アリの体の内部に強い筋肉を支える骨格構造があるからだと考えられている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">自分の体重の数十倍もある物を持ち上げることができること</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「は骨格構造があるからだと考えられている」→理由が説明されている能力が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「体重の数十倍を持ち上げられるのは、強い骨格構造があるからだ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「アリの体」→能力を持っている主体であって能力そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">90</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、気体や液体が温められると体積が増えて密度が低くなり、上方へ移動する現象のことだ。お湯を沸かすとき、底のほうから温まった水が上に上がってくる動きも、この現象の一例だ。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">温められた気体や液体が上方へ移動する現象（対流）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「対流は、温められた流体が上方へ移動する現象だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「お湯」→現象の具体例として挙げられたものであって現象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">91</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ペンギンは寒さが厳しい場所で生きるために、体の中にたっぷりの脂肪をたくわえている。また、羽毛が密生していて、体温が逃げにくい構造になっている。<span class="shiji-q">それ</span>によって、マイナス数十度の環境でも体温を保つことができる。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">脂肪をたくわえ羽毛が密生していること（体温を守るための体の構造）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「によってマイナス数十度でも体温を保てる」→体温維持の原因となる体の特徴が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「脂肪と密な羽毛によって、マイナス数十度でも体温を保つことができる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「マイナス数十度の環境」→体温を保つべき厳しい状況であって原因ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">92</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、何らかの失敗や問題が起きたとき、その原因をできるだけ多くの観点から掘り下げて調べ、根本的な理由を明らかにする手法のことだ。製造業の現場などで品質改善のために広く使われている。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">失敗や問題の根本的な原因を明らかにする手法（原因分析・根本原因分析）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「原因分析は、問題の根本的な理由を明らかにする手法だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「製造業の現場」→手法が使われる場所であって手法そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">93</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">マングローブは熱帯の海岸や河口部に生える樹木で、根が複雑に絡み合って海の中に立っている。この根は魚や甲殻類の産卵場所や隠れ場所になっており、<span class="shiji-q">それ</span>を失うと沿岸の生態系が崩れてしまう。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">マングローブ（の根が作る環境）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の内容を指す。直後「を失うと生態系が崩れる」→生態系を支えている存在が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「マングローブを失うと沿岸の生態系が崩れてしまう」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「海岸」「河口部」→マングローブが生える場所であってなくなると困る存在ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">94</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">ハチミツは、ミツバチが花の蜜を集め、巣の中で酵素を加えながら水分を蒸発させて濃縮させたものだ。糖分が非常に高く、細菌が繁殖しにくい。<span class="shiji-q">それ</span>がハチミツが何千年たっても腐らない理由だ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">糖分が非常に高く細菌が繁殖しにくいこと</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「がハチミツが腐らない理由だ」→腐らない原因が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「糖分が高く細菌が繁殖しにくいことが、ハチミツが腐らない理由だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「花の蜜」→原材料であって腐らない理由ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">95</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、原子の中心にある核が分裂するときに膨大なエネルギーを放出する反応のことだ。原子力発電はこの反応を利用して電力を生み出している。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">原子の核が分裂して膨大なエネルギーを放出する反応（核分裂）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「核分裂は、原子の核が分裂してエネルギーを放出する反応だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「原子力発電」→この反応を利用した技術であって反応そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">96</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">江戸時代の日本では、古くなった紙や布をほとんど捨てずに再利用する文化が根付いていた。紙くずを回収してすき直したり、布の切れ端を縫い合わせて雑巾にしたりした。<span class="shiji-q">それ</span>は現代のリサイクルの考え方に通じるものだ。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">古くなった紙や布を再利用する文化（の考え方）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「は現代のリサイクルの考え方に通じるものだ」→現代の概念と結びつけられている文化が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「古いものを再利用する文化は、現代のリサイクルの考え方に通じる」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「紙くず」「布」→再利用される材料であって文化や考え方ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">97</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">人間の記憶は、繰り返し思い出すことで定着しやすくなる。試験勉強では、一度読んだだけでは記憶に残りにくく、何度も反復することが大切だとされている。<span class="shiji-q">それ</span>を活かして、一定の間隔をあけて復習する「間隔反復法」という勉強方法がある。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">繰り返し思い出すことで記憶が定着しやすくなること（という性質）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の事がらを指す。直後「を活かして間隔反復法という方法がある」→勉強法のもとになった記憶の性質が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「繰り返しで記憶が定着しやすくなる性質を活かした間隔反復法という勉強方法がある」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「試験勉強」→活動であって記憶の性質ではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">98</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、光が異なる密度の物質の境界を通過するとき、進む向きが変わる性質のことだ。水の中のストローが折れて見えたり、プールの底が実際より浅く見えたりするのも、この性質によるものだ。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">光が異なる密度の物質の境界で向きが変わる性質（光の屈折）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。ストローとプールは具体例。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「光の屈折は、光が境界を通過するとき向きが変わる性質だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「ストロー」「プール」→具体例として挙げられたものであって性質そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">99</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">それ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text">クジラは非常に大きな体を持ちながら、海の中でさまざまな音を出してコミュニケーションをとる。この音は水中で何百キロも伝わることがある。<span class="shiji-q">それ</span>を使って、離れた仲間との連絡や求愛を行うと考えられている。</div>
+      <div class="mondai-q">「それ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">（クジラが出す）音</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「それ」は直前の物を指す。直後「を使って仲間との連絡や求愛を行う」→コミュニケーションの手段となる音が照応先。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「音を使って、離れた仲間との連絡や求愛を行う」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「水中」→音が伝わる場所であって手段そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+  <div class="q-card">
+    <div class="q-head">
+      <div class="q-num-badge">100</div>
+      <div class="q-shiji-tag">指示語：<span class="shiji-word">これ</span></div>
+    </div>
+    <div class="q-body">
+      <div class="q-text"><span class="shiji-q">これ</span>は、地球の外から降り注ぐ高エネルギーの粒子が大気と衝突し、上空で光を発する現象のことだ。主に北極や南極に近い地域の夜空に、緑や赤、紫などの光のカーテンが現れる。</div>
+      <div class="mondai-q">「これ」は何を指しますか？</div>
+      <button class="toggle-btn" onclick="toggleAnswer(this)" aria-expanded="false">
+        <span class="toggle-icon">＋</span>
+        <span class="toggle-text">答えを見る</span>
+        <span class="toggle-hint">タップで開閉</span>
+      </button>
+      <div class="answer-box"><div class="answer-inner">
+        <div class="answer-model">
+          <div class="answer-label">解答</div>
+          <div class="answer-text">宇宙から来た粒子が大気と衝突して光を発する現象（オーロラ）</div>
+        </div>
+        <div class="step-box">
+          <div class="step-label">📍 指示語を探す2ステップ</div>
+          <div class="step-item"><span class="step-num">①</span><span class="step-text">「これは〜のことだ」という文型では後ろに説明が続く（後方照応）。</span></div>
+          <div class="step-item"><span class="step-num">②</span><span class="step-text">置き換えテスト：「オーロラは、高エネルギーの粒子が大気と衝突して光を発する現象だ」→自然✅</span></div>
+        </div>
+        <div class="wrong-box">
+          <div class="wrong-label">✕ まちがえやすい答え</div>
+          <div class="wrong-text">「北極」「南極」→オーロラが見られる場所であって現象そのものではない</div>
+        </div>
+      </div></div>
+    </div>
+  </div>
+</div><!-- /panel-5 -->
+
+</main>
+<script>
+function showPanel(n, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+  document.getElementById('panel-' + n).classList.add('active');
+  btn.classList.add('active');
+  btn.setAttribute('aria-selected', 'true');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleAnswer(btn) {
+  const box = btn.nextElementSibling;
+  const open = btn.getAttribute('aria-expanded') === 'true';
+  btn.setAttribute('aria-expanded', String(!open));
+  btn.querySelector('.toggle-text').textContent = open ? '答えを見る' : '閉じる';
+  box.classList.toggle('open', !open);
+}
+</script>
+</body>
+</html>
