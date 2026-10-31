@@ -1,0 +1,3263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>一文要約 – 星組メソッドライブラリ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c8a84b;
+  --dark:#2a2118;
+  --mid:#5c4a30;
+  --light:#8a7355;
+  --bg:#faf8f4;
+  --card-bg:#ffffff;
+  --border:#e8e0d0;
+  --correct:#2d7a3a;
+  --incorrect:#c0392b;
+  --correct-bg:#eaf5ec;
+  --incorrect-bg:#fdecea;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'BIZ UDPGothic',sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+  line-height:1.7;
+  min-height:100vh;
+}
+/* ===== Header ===== */
+.site-header{
+  background:var(--dark);
+  color:#fff;
+  padding:1.2rem 1.5rem 1rem;
+  text-align:center;
+  border-bottom:3px solid var(--gold);
+}
+.brand{
+  font-family:'Noto Serif JP',serif;
+  font-size:.75rem;
+  letter-spacing:.2em;
+  color:var(--gold);
+  margin-bottom:.3rem;
+}
+.main-title{
+  font-family:'Noto Serif JP',serif;
+  font-size:1.5rem;
+  font-weight:700;
+  letter-spacing:.1em;
+}
+.sub-title{
+  font-size:.8rem;
+  color:#ccc;
+  margin-top:.4rem;
+}
+/* ===== Progress ===== */
+.progress-bar-wrap{
+  background:var(--dark);
+  padding:.5rem 1.5rem .8rem;
+}
+.progress-info{
+  display:flex;
+  justify-content:space-between;
+  font-size:.75rem;
+  color:#aaa;
+  margin-bottom:.3rem;
+}
+.progress-bar{
+  height:4px;
+  background:#444;
+  border-radius:2px;
+  overflow:hidden;
+}
+.progress-fill{
+  height:100%;
+  background:var(--gold);
+  border-radius:2px;
+  transition:width .4s ease;
+  width:0%;
+}
+/* ===== Tabs ===== */
+.series-tabs{
+  display:flex;
+  overflow-x:auto;
+  background:#fff;
+  border-bottom:2px solid var(--border);
+  gap:0;
+}
+.series-tabs::-webkit-scrollbar{height:4px}
+.series-tabs::-webkit-scrollbar-thumb{background:var(--light);border-radius:2px}
+.stab{
+  flex:1 0 auto;
+  min-width:80px;
+  padding:.6rem .5rem;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  border-bottom:3px solid transparent;
+  font-family:'BIZ UDPGothic',sans-serif;
+  color:var(--light);
+  text-align:center;
+  transition:all .2s;
+}
+.stab:hover{background:#f5f0e8;color:var(--mid)}
+.stab.active{
+  border-bottom-color:var(--gold);
+  color:var(--dark);
+  font-weight:700;
+}
+.stab-icon{display:block;font-size:1rem;margin-bottom:.2rem}
+.stab-label{font-size:.7rem;line-height:1.3}
+/* ===== Panel / Cards ===== */
+.panel{display:none;padding:1rem .8rem 3rem}
+.panel.active{display:block}
+/* ===== Q-card ===== */
+.q-card{
+  background:var(--card-bg);
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:1rem;
+  overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.q-head{
+  background:var(--dark);
+  color:#fff;
+  padding:.5rem .8rem;
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+}
+.q-num{
+  font-family:'Noto Serif JP',serif;
+  font-size:.85rem;
+  font-weight:700;
+  color:var(--gold);
+}
+.q-type{
+  font-size:.72rem;
+  background:rgba(200,168,75,.2);
+  color:var(--gold);
+  border:1px solid rgba(200,168,75,.4);
+  padding:.15rem .5rem;
+  border-radius:12px;
+}
+.q-body{padding:.9rem .8rem .8rem}
+.q-text{
+  font-size:.95rem;
+  line-height:1.85;
+  margin-bottom:.6rem;
+  padding:.6rem .8rem;
+  background:#faf7f0;
+  border-left:3px solid var(--gold);
+  border-radius:4px;
+}
+.q-inst{
+  font-size:.78rem;
+  color:var(--light);
+  margin-bottom:.7rem;
+}
+/* ===== Options ===== */
+.opts-wrap{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:.5rem;
+  margin-bottom:.8rem;
+}
+.opt{
+  display:flex;
+  align-items:flex-start;
+  gap:.6rem;
+  padding:.6rem .8rem;
+  border:2px solid var(--border);
+  border-radius:8px;
+  background:#fff;
+  cursor:pointer;
+  text-align:left;
+  font-family:'BIZ UDPGothic',sans-serif;
+  font-size:.88rem;
+  line-height:1.6;
+  transition:all .2s;
+  width:100%;
+}
+.opt:hover:not([disabled]){border-color:var(--gold);background:#fffbf0}
+.opt.correct{
+  border-color:var(--correct);
+  background:var(--correct-bg);
+  color:var(--correct);
+}
+.opt.incorrect{
+  border-color:var(--incorrect);
+  background:var(--incorrect-bg);
+  color:var(--incorrect);
+  text-decoration:line-through;
+}
+.opt-label{
+  font-weight:700;
+  min-width:1.2em;
+  color:var(--mid);
+}
+.opt.correct .opt-label{color:var(--correct)}
+.opt.incorrect .opt-label{color:var(--incorrect)}
+/* ===== Toggle / Answer ===== */
+.toggle-btn{
+  display:inline-block;
+  padding:.4rem 1.2rem;
+  background:transparent;
+  border:2px solid var(--gold);
+  color:var(--gold);
+  border-radius:20px;
+  cursor:pointer;
+  font-family:'BIZ UDPGothic',sans-serif;
+  font-size:.8rem;
+  transition:all .2s;
+  margin-bottom:.6rem;
+}
+.toggle-btn:hover{background:var(--gold);color:#fff}
+.answer-box{
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .35s ease;
+  overflow:hidden;
+}
+.answer-box.open{grid-template-rows:1fr}
+.answer-inner{
+  overflow:hidden;
+  padding:0;
+  transition:padding .35s ease;
+}
+.answer-box.open .answer-inner{
+  padding:.7rem .8rem;
+  background:#f6f9f6;
+  border-radius:6px;
+  border-left:3px solid var(--correct);
+}
+.ans-label{font-weight:700;font-size:.9rem;margin-bottom:.3rem}
+.ans-text{font-size:.88rem;margin-bottom:.3rem}
+.type-note{font-size:.75rem;color:var(--light)}
+/* ===== Result message ===== */
+.result-msg{
+  text-align:center;
+  font-size:.82rem;
+  margin-top:.4rem;
+  min-height:1.2em;
+  font-weight:700;
+}
+.result-msg.ok{color:var(--correct)}
+.result-msg.ng{color:var(--incorrect)}
+/* ===== Score ===== */
+#score-display{
+  text-align:center;
+  padding:.6rem;
+  background:var(--dark);
+  color:var(--gold);
+  font-family:'Noto Serif JP',serif;
+  font-size:.9rem;
+  border-top:1px solid #444;
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">星組メソッドライブラリ</div>
+  <div class="main-title">一文要約</div>
+  <div class="sub-title">長い文から大切な一文を選ぼう　全100問（5回×20問）</div>
+</header>
+<div class="progress-bar-wrap">
+  <div class="progress-info">
+    <span id="prog-text">0 / 100 問正解</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+<nav>
+  <div class="series-tabs" role="tablist">
+        <button class="stab active" role="tab" onclick="showPanel(1,this)">
+          <span class="stab-icon">①</span>
+          <span class="stab-label">第1回<br>全20問</span>
+        </button>
+        <button class="stab" role="tab" onclick="showPanel(2,this)">
+          <span class="stab-icon">②</span>
+          <span class="stab-label">第2回<br>全20問</span>
+        </button>
+        <button class="stab" role="tab" onclick="showPanel(3,this)">
+          <span class="stab-icon">③</span>
+          <span class="stab-label">第3回<br>全20問</span>
+        </button>
+        <button class="stab" role="tab" onclick="showPanel(4,this)">
+          <span class="stab-icon">④</span>
+          <span class="stab-label">第4回<br>全20問</span>
+        </button>
+        <button class="stab" role="tab" onclick="showPanel(5,this)">
+          <span class="stab-icon">⑤</span>
+          <span class="stab-label">第5回<br>全20問</span>
+        </button>
+  </div>
+</nav>
+
+<main>
+    <div class="panel active" id="panel-1" role="tabpanel">
+
+      <div class="q-card" data-q="1">
+        <div class="q-head">
+          <span class="q-num">問1</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">村の<ruby>外<rt>そと</rt></ruby>れに<ruby>住<rt>す</rt></ruby>む<ruby>老人<rt>ろうじん</rt></ruby>の<ruby>孝太郎<rt>こうたろう</rt></ruby>さんは、<ruby>毎朝<rt>まいあさ</rt></ruby>、<ruby>誰<rt>だれ</rt></ruby>よりも<ruby>早<rt>はや</rt></ruby>く<ruby>起<rt>お</rt></ruby>きて、<ruby>丁寧<rt>ていねい</rt></ruby>に<ruby>畑<rt>はたけ</rt></ruby>の<ruby>草取<rt>くさと</rt></ruby>りをする。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">毎朝、村の外れで草取りをする。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">孝太郎さんは草取りをする。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">老人は村の外れに住んでいる。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">孝太郎さんは草取りをする。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="2">
+        <div class="q-head">
+          <span class="q-num">問2</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>長年<rt>ながねん</rt></ruby>この<ruby>町<rt>まち</rt></ruby>で<ruby>活躍<rt>かつやく</rt></ruby>してきた<ruby>鈴木先生<rt>すずきせんせい</rt></ruby>は、ことし<ruby>三月<rt>さんがつ</rt></ruby>に<ruby>定年退職<rt>ていねんたいしょく</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">鈴木先生は定年退職した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">鈴木先生は長年活躍していた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">長年この町で活躍してきた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">鈴木先生は定年退職した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="3">
+        <div class="q-head">
+          <span class="q-num">問3</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>世界中<rt>せかいじゅう</rt></ruby>で<ruby>愛<rt>あい</rt></ruby>される<ruby>有名<rt>ゆうめい</rt></ruby>なピアニストの<ruby>山田<rt>やまだ</rt></ruby>さんは、<ruby>地元<rt>じもと</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもたちのために<ruby>無料<rt>むりょう</rt></ruby>で<ruby>演奏<rt>えんそう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">山田さんは無料で演奏した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">有名なピアニストが地元に来た。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">山田さんは世界中で有名なピアニストだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">山田さんは無料で演奏した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="4">
+        <div class="q-head">
+          <span class="q-num">問4</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">クラス<ruby>全員<rt>ぜんいん</rt></ruby>から<ruby>信頼<rt>しんらい</rt></ruby>される<ruby>委員長<rt>いいんちょう</rt></ruby>の<ruby>早苗<rt>さなえ</rt></ruby>は、<ruby>困<rt>こま</rt></ruby>っている<ruby>友達<rt>ともだち</rt></ruby>に<ruby>進<rt>すす</rt></ruby>んで<ruby>声<rt>こえ</rt></ruby>をかける。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">早苗は困っている友達に声をかける。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">委員長の早苗はクラスを引っ張っている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">早苗はクラス全員から信頼されている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">早苗は困っている友達に声をかける。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="5">
+        <div class="q-head">
+          <span class="q-num">問5</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>体調<rt>たいちょう</rt></ruby>が<ruby>悪<rt>わる</rt></ruby>かったので、<ruby>陽子<rt>ようこ</rt></ruby>は<ruby>早退<rt>そうたい</rt></ruby>して<ruby>病院<rt>びょういん</rt></ruby>に<ruby>行<rt>い</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">陽子は病院で早退した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">陽子は体調が悪かった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">陽子は早退して病院に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">陽子は早退して病院に行った。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="6">
+        <div class="q-head">
+          <span class="q-num">問6</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>激<rt>はげ</rt></ruby>しい<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>っていたため、<ruby>試合<rt>しあい</rt></ruby>は<ruby>中止<rt>ちゅうし</rt></ruby>になった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">試合は中止になった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">激しい雨が降っていた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">雨のため試合ができなかった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">試合は中止になった。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="7">
+        <div class="q-head">
+          <span class="q-num">問7</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>の<ruby>帰<rt>かえ</rt></ruby>り<ruby>道<rt>みち</rt></ruby>、<ruby>道<rt>みち</rt></ruby>に<ruby>迷<rt>まよ</rt></ruby>ったため、<ruby>翔<rt>しょう</rt></ruby>は<ruby>知<rt>し</rt></ruby>らないお<ruby>宅<rt>たく</rt></ruby>で<ruby>道<rt>みち</rt></ruby>を<ruby>尋<rt>たず</rt></ruby>ねた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">翔は帰り道に知らないお宅を訪ねた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">翔は道を尋ねた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">翔は買い物の帰り道に迷った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">翔は道を尋ねた。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="8">
+        <div class="q-head">
+          <span class="q-num">問8</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>練習<rt>れんしゅう</rt></ruby>で<ruby>何度<rt>なんど</rt></ruby>も<ruby>失敗<rt>しっぱい</rt></ruby>したが、<ruby>本番<rt>ほんばん</rt></ruby>で<ruby>玲奈<rt>れいな</rt></ruby>はみごとに<ruby>演奏<rt>えんそう</rt></ruby>をやり<ruby>遂<rt>と</rt></ruby>げた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">玲奈は本番で演奏をした。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">玲奈は演奏をやり遂げた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">玲奈は練習で何度も失敗した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">玲奈は演奏をやり遂げた。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="9">
+        <div class="q-head">
+          <span class="q-num">問9</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">わたしのことをいつも<ruby>心配<rt>しんぱい</rt></ruby>している<ruby>祖母<rt>そぼ</rt></ruby>は、<ruby>遠<rt>とお</rt></ruby>くに<ruby>住<rt>す</rt></ruby>んでいるのに、<ruby>毎週<rt>まいしゅう</rt></ruby><ruby>欠<rt>か</rt></ruby>かさず、<ruby>手作<rt>てづく</rt></ruby>りのクッキーを<ruby>送<rt>おく</rt></ruby>ってくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">祖母は手作りのクッキーを送ってくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">祖母は毎週手紙を書いている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">わたしは祖母のことを心配している。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">祖母は手作りのクッキーを送ってくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="10">
+        <div class="q-head">
+          <span class="q-num">問10</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>足<rt>あし</rt></ruby>をけがして<ruby>動<rt>うご</rt></ruby>けなくなったわたしのために、<ruby>隣<rt>となり</rt></ruby>に<ruby>住<rt>す</rt></ruby>む<ruby>田中<rt>たなか</rt></ruby>さんは<ruby>毎日<rt>まいにち</rt></ruby>、わざわざ<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>をしてきてくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">わたしは足をけがして動けない。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">田中さんはわたしのために買い物をしてくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">田中さんは毎日わたしの家に来る。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">田中さんはわたしのために買い物をしてくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="11">
+        <div class="q-head">
+          <span class="q-num">問11</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>試合<rt>しあい</rt></ruby>で<ruby>負<rt>ま</rt></ruby>けて<ruby>落<rt>お</rt></ruby>ち<ruby>込<rt>こ</rt></ruby>んでいる<ruby>俊<rt>しゅん</rt></ruby>のために、<ruby>監督<rt>かんとく</rt></ruby>は<ruby>練習後<rt>れんしゅうご</rt></ruby>、<ruby>毎回<rt>まいかい</rt></ruby><ruby>個別<rt>こべつ</rt></ruby>に<ruby>指導<rt>しどう</rt></ruby>してくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">監督は俊を個別に指導してくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">俊は試合で負けて落ち込んでいる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">監督は練習後に指導をしている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">監督は俊を個別に指導してくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="12">
+        <div class="q-head">
+          <span class="q-num">問12</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>長年<rt>ながねん</rt></ruby><ruby>体<rt>からだ</rt></ruby>が<ruby>弱<rt>よわ</rt></ruby>かった<ruby>弟<rt>おとうと</rt></ruby>のために、<ruby>兄<rt>あに</rt></ruby>は<ruby>仕事<rt>しごと</rt></ruby>の<ruby>合間<rt>あいま</rt></ruby>に、<ruby>毎日<rt>まいにち</rt></ruby><ruby>栄養<rt>えいよう</rt></ruby>バランスを<ruby>考<rt>かんが</rt></ruby>えた<ruby>食事<rt>しょくじ</rt></ruby>を<ruby>用意<rt>ようい</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">兄は弟のために栄養バランスを考えた食事を用意した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">兄は毎日仕事の合間に料理をした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">弟は長年体が弱かった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">兄は弟のために栄養バランスを考えた食事を用意した。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="13">
+        <div class="q-head">
+          <span class="q-num">問13</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">お<ruby>母<rt>かあ</rt></ruby>さんは、たくさんの<ruby>荷物<rt>にもつ</rt></ruby>をかかえながらも、にこにこ<ruby>笑<rt>わら</rt></ruby>いながら、<ruby>颯爽<rt>さっそう</rt></ruby>と<ruby>歩<rt>ある</rt></ruby>いていた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">お母さんは荷物をかかえていた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">お母さんはたくさんの荷物を持っていた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">お母さんは笑いながら歩いていた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">お母さんは笑いながら歩いていた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="14">
+        <div class="q-head">
+          <span class="q-num">問14</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先生<rt>せんせい</rt></ruby>は、とても<ruby>落<rt>お</rt></ruby>ち<ruby>着<rt>つ</rt></ruby>いた<ruby>声<rt>こえ</rt></ruby>で、<ruby>何度<rt>なんど</rt></ruby>も<ruby>繰<rt>く</rt></ruby>り<ruby>返<rt>かえ</rt></ruby>しながら、<ruby>根気強<rt>ねぎづよ</rt></ruby>く<ruby>説明<rt>せつめい</rt></ruby>してくれた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">先生は落ち着いた声で説明してくれた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">先生はとても親切だった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">先生は何度も繰り返して話した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">先生は落ち着いた声で説明してくれた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="15">
+        <div class="q-head">
+          <span class="q-num">問15</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>弟<rt>おとうと</rt></ruby>は、ほんの<ruby>少<rt>すこ</rt></ruby>しも<ruby>怖<rt>こわ</rt></ruby>がる<ruby>様子<rt>ようす</rt></ruby>を<ruby>見<rt>み</rt></ruby>せずに、<ruby>堂々<rt>どうどう</rt></ruby>と<ruby>舞台<rt>ぶたい</rt></ruby>に<ruby>立<rt>た</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">弟は堂々と舞台に立った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">弟は少しも怖がっていなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">弟は舞台に立った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">弟は堂々と舞台に立った。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="16">
+        <div class="q-head">
+          <span class="q-num">問16</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>店員<rt>てんいん</rt></ruby>さんは、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>丁寧<rt>ていねい</rt></ruby>に、<ruby>何度<rt>なんど</rt></ruby>も<ruby>頭<rt>あたま</rt></ruby>を<ruby>下<rt>さ</rt></ruby>げながら、<ruby>客<rt>きゃく</rt></ruby>の<ruby>要望<rt>ようぼう</rt></ruby>に<ruby>応<rt>こた</rt></ruby>えた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">店員さんは丁寧に客の要望に応えた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">店員さんは非常に親切な人だった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">店員さんは何度も頭を下げた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">店員さんは丁寧に客の要望に応えた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="17">
+        <div class="q-head">
+          <span class="q-num">問17</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">この<ruby>前<rt>まえ</rt></ruby>の<ruby>土曜日<rt>どようび</rt></ruby>、<ruby>駅前<rt>えきまえ</rt></ruby>の<ruby>広場<rt>ひろば</rt></ruby>で、<ruby>祐太<rt>ゆうた</rt></ruby>はクラスのみんなとドッジボールをして<ruby>遊<rt>あそ</rt></ruby>んだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">祐太はドッジボールをして遊んだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">祐太は駅前の広場で遊んだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">祐太は土曜日に駅前に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">祐太はドッジボールをして遊んだ。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="18">
+        <div class="q-head">
+          <span class="q-num">問18</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>夏休<rt>なつやす</rt></ruby>みの<ruby>最終日<rt>さいしゅうび</rt></ruby>、<ruby>図書館<rt>としょかん</rt></ruby>で、<ruby>亮<rt>りょう</rt></ruby>は<ruby>読書感想文<rt>どくしょかんそうぶん</rt></ruby>を<ruby>書<rt>か</rt></ruby>き<ruby>終<rt>お</rt></ruby>えた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">図書館で読書感想文を書いた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">亮は読書感想文を書き終えた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">亮は夏休みの最終日に図書館に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">亮は読書感想文を書き終えた。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="19">
+        <div class="q-head">
+          <span class="q-num">問19</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週<rt>せんしゅう</rt></ruby>の<ruby>木曜日<rt>もくようび</rt></ruby>、<ruby>体育館<rt>たいいくかん</rt></ruby>で、<ruby>美咲<rt>みさき</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めてバスケットボールのシュートを<ruby>決<rt>き</rt></ruby>めた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">美咲はシュートを決めた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">美咲は体育館でバスケットボールをした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">美咲は先週の木曜日に体育館に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">美咲はシュートを決めた。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="20">
+        <div class="q-head">
+          <span class="q-num">問20</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週末<rt>せんしゅうまつ</rt></ruby>、<ruby>隣町<rt>となりまち</rt></ruby>の<ruby>体育館<rt>たいいくかん</rt></ruby>で、<ruby>恵<rt>めぐみ</rt></ruby>は<ruby>剣道<rt>けんどう</rt></ruby>の<ruby>昇段試験<rt>しょうだんしけん</rt></ruby>に<ruby>合格<rt>ごうかく</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">恵は隣町の体育館で剣道をした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">恵は先週末に体育館に行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">恵は剣道の昇段試験に合格した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">恵は剣道の昇段試験に合格した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-2" role="tabpanel">
+
+      <div class="q-card" data-q="1">
+        <div class="q-head">
+          <span class="q-num">問1</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>地域<rt>ちいき</rt></ruby>で<ruby>長年<rt>ながねん</rt></ruby><ruby>活動<rt>かつどう</rt></ruby>してきた<ruby>山下<rt>やました</rt></ruby>さんは、<ruby>今年<rt>ことし</rt></ruby>のボランティア<ruby>大賞<rt>たいしょう</rt></ruby>を<ruby>受賞<rt>じゅしょう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">山下さんはボランティア大賞を受賞した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">山下さんは地域でよく知られている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">山下さんは地域で長年活動した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">山下さんはボランティア大賞を受賞した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="2">
+        <div class="q-head">
+          <span class="q-num">問2</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>何十年<rt>なんじゅうねん</rt></ruby>もこの<ruby>町<rt>まち</rt></ruby>で<ruby>商売<rt>しょうばい</rt></ruby>を<ruby>続<rt>つづ</rt></ruby>けてきた<ruby>八百屋<rt>やおや</rt></ruby>の<ruby>主人<rt>しゅじん</rt></ruby>は、<ruby>今日<rt>きょう</rt></ruby>、<ruby>店<rt>みせ</rt></ruby>を<ruby>閉<rt>し</rt></ruby>めた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">八百屋の主人は店を閉めた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">八百屋は長年この町にあった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">八百屋の主人は何十年も商売を続けた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">八百屋の主人は店を閉めた。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="3">
+        <div class="q-head">
+          <span class="q-num">問3</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>科学<rt>かがく</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>として<ruby>長年<rt>ながねん</rt></ruby><ruby>生徒<rt>せいと</rt></ruby>に<ruby>慕<rt>した</rt></ruby>われてきた<ruby>木村先生<rt>きむらせんせい</rt></ruby>は、<ruby>今年度<rt>こんねんど</rt></ruby>から<ruby>教頭<rt>きょうとう</rt></ruby>に<ruby>就任<rt>しゅうにん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">木村先生は科学の先生として有名だ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">木村先生は長年生徒に慕われてきた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">木村先生は教頭に就任した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">木村先生は教頭に就任した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="4">
+        <div class="q-head">
+          <span class="q-num">問4</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>幼<rt>おさな</rt></ruby>いころから<ruby>絵<rt>え</rt></ruby>が<ruby>得意<rt>とくい</rt></ruby>で、<ruby>多<rt>おお</rt></ruby>くの<ruby>賞<rt>しょう</rt></ruby>を<ruby>受<rt>う</rt></ruby>けてきた<ruby>桜子<rt>さくらこ</rt></ruby>は、<ruby>今年<rt>ことし</rt></ruby><ruby>個展<rt>こてん</rt></ruby>を<ruby>開<rt>ひら</rt></ruby>いた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">桜子は多くの賞を受けてきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">桜子は幼いころから絵が得意だ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">桜子は個展を開いた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">桜子は個展を開いた。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="5">
+        <div class="q-head">
+          <span class="q-num">問5</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>台風<rt>たいふう</rt></ruby>が<ruby>接近<rt>せっきん</rt></ruby>していたので、<ruby>純<rt>じゅん</rt></ruby>は<ruby>雨戸<rt>あまど</rt></ruby>を<ruby>閉<rt>し</rt></ruby>めて<ruby>家<rt>いえ</rt></ruby>の<ruby>中<rt>なか</rt></ruby>にこもった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">純は雨戸を閉めて家の中にこもった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">台風が接近していた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">純は台風に備えた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">純は雨戸を閉めて家の中にこもった。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="6">
+        <div class="q-head">
+          <span class="q-num">問6</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>電車<rt>でんしゃ</rt></ruby>が<ruby>遅<rt>おく</rt></ruby>れていたので、<ruby>悠<rt>ゆう</rt></ruby>は<ruby>駅<rt>えき</rt></ruby>の<ruby>近<rt>ちか</rt></ruby>くのカフェで<ruby>時間<rt>じかん</rt></ruby>をつぶした。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">悠は電車が遅れていることを知った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">悠は駅の近くのカフェに入った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">悠はカフェで時間をつぶした。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">悠はカフェで時間をつぶした。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="7">
+        <div class="q-head">
+          <span class="q-num">問7</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>雷<rt>かみなり</rt></ruby>が<ruby>鳴<rt>な</rt></ruby>っていたため、<ruby>子<rt>こ</rt></ruby>どもたちは<ruby>外<rt>そと</rt></ruby>で<ruby>遊<rt>あそ</rt></ruby>ぶのをやめて<ruby>家<rt>いえ</rt></ruby>に<ruby>戻<rt>もど</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">雷が鳴っていた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">子どもたちは家に戻った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">子どもたちは遊ぶのをやめた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">子どもたちは家に戻った。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="8">
+        <div class="q-head">
+          <span class="q-num">問8</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>財布<rt>さいふ</rt></ruby>を<ruby>忘<rt>わす</rt></ruby>れてしまったので、<ruby>環<rt>たまき</rt></ruby>は<ruby>家<rt>いえ</rt></ruby>まで<ruby>走<rt>はし</rt></ruby>って<ruby>取<rt>と</rt></ruby>りに<ruby>戻<rt>もど</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">環は家まで走った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">環は財布を忘れた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">環は財布を取りに戻った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">環は財布を取りに戻った。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="9">
+        <div class="q-head">
+          <span class="q-num">問9</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>体<rt>からだ</rt></ruby>の<ruby>弱<rt>よわ</rt></ruby>いお<ruby>年寄<rt>としよ</rt></ruby>りのために、<ruby>近所<rt>きんじょ</rt></ruby>の<ruby>高校生<rt>こうこうせい</rt></ruby>たちは<ruby>週末<rt>しゅうまつ</rt></ruby>、<ruby>買<rt>か</rt></ruby>い<ruby>物<rt>もの</rt></ruby>や<ruby>掃除<rt>そうじ</rt></ruby>を<ruby>手伝<rt>てつだ</rt></ruby>いに<ruby>来<rt>き</rt></ruby>てくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">高校生たちはお年寄りの手伝いに来てくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">高校生たちは週末に近所を回っている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">お年寄りは体が弱い。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">高校生たちはお年寄りの手伝いに来てくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="10">
+        <div class="q-head">
+          <span class="q-num">問10</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>病気<rt>びょうき</rt></ruby>で<ruby>入院<rt>にゅういん</rt></ruby>しているおじいさんのために、<ruby>孫<rt>まご</rt></ruby>の<ruby>彩<rt>あや</rt></ruby>は<ruby>学校帰<rt>がっこうがえ</rt></ruby>りに<ruby>毎日<rt>まいにち</rt></ruby><ruby>立<rt>た</rt></ruby>ち<ruby>寄<rt>よ</rt></ruby>って<ruby>話<rt>はな</rt></ruby>し<ruby>相手<rt>あいて</rt></ruby>になる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">彩は学校帰りに病院に寄っている。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">彩はおじいさんの話し相手になる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">おじいさんは病気で入院している。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">彩はおじいさんの話し相手になる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="11">
+        <div class="q-head">
+          <span class="q-num">問11</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>疲<rt>つか</rt></ruby>れて<ruby>帰<rt>かえ</rt></ruby>ってきたお<ruby>父<rt>とう</rt></ruby>さんのために、<ruby>萌<rt>もえ</rt></ruby>は<ruby>夕食<rt>ゆうしょく</rt></ruby>を<ruby>作<rt>つく</rt></ruby>り、<ruby>温<rt>あたた</rt></ruby>かい<ruby>風呂<rt>ふろ</rt></ruby>も<ruby>用意<rt>ようい</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">萌は夕食を作ってお父さんを待った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">萌はお父さんのために夕食と風呂を用意した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">お父さんは疲れて帰ってきた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">萌はお父さんのために夕食と風呂を用意した。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="12">
+        <div class="q-head">
+          <span class="q-num">問12</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>毎日<rt>まいにち</rt></ruby><ruby>残業<rt>ざんぎょう</rt></ruby>で<ruby>疲<rt>つか</rt></ruby>れているお<ruby>母<rt>かあ</rt></ruby>さんのために、<ruby>拓海<rt>たくみ</rt></ruby>は<ruby>学校<rt>がっこう</rt></ruby>から<ruby>帰<rt>かえ</rt></ruby>ったあと、<ruby>洗濯物<rt>せんたくもの</rt></ruby>をたたんでおく。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">お母さんは毎日残業で疲れている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">拓海は学校から帰ったあとに家の手伝いをする。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">拓海はお母さんのために洗濯物をたたむ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">拓海はお母さんのために洗濯物をたたむ。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="13">
+        <div class="q-head">
+          <span class="q-num">問13</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>祖父<rt>そふ</rt></ruby>は、どんなに<ruby>疲<rt>つか</rt></ruby>れていても、いつもにこにこ<ruby>笑顔<rt>えがお</rt></ruby>で、<ruby>穏<rt>おだ</rt></ruby>やかに<ruby>話<rt>はな</rt></ruby>しかけてくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">祖父はいつも笑顔で話しかけてくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">祖父は笑顔が多い人だ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">祖父はどんなに疲れていても元気だ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">祖父はいつも笑顔で話しかけてくれる。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="14">
+        <div class="q-head">
+          <span class="q-num">問14</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>兄<rt>あに</rt></ruby>は、<ruby>長時間<rt>ちょうじかん</rt></ruby><ruby>歩<rt>ある</rt></ruby>いて<ruby>疲<rt>つか</rt></ruby>れていたが、<ruby>最後<rt>さいご</rt></ruby>まで<ruby>弱音<rt>よわね</rt></ruby>を<ruby>吐<rt>は</rt></ruby>かずに、<ruby>黙々<rt>もくもく</rt></ruby>と<ruby>山道<rt>やまみち</rt></ruby>を<ruby>歩<rt>ある</rt></ruby>き<ruby>続<rt>つづ</rt></ruby>けた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">兄は最後まで弱音を吐かなかった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">兄は黙々と山道を歩き続けた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">兄は長時間歩いて疲れた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">兄は黙々と山道を歩き続けた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="15">
+        <div class="q-head">
+          <span class="q-num">問15</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>母<rt>はは</rt></ruby>は、とても<ruby>優<rt>やさ</rt></ruby>しい<ruby>口調<rt>くちょう</rt></ruby>で、<ruby>何度<rt>なんど</rt></ruby>でも<ruby>辛抱強<rt>しんぼうづよ</rt></ruby>く、わたしの<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いてくれた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">母は辛抱強い人だった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">母は何度でも話を聞いてくれた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">母は優しい口調でわたしの話を聞いてくれた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">母は優しい口調でわたしの話を聞いてくれた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="16">
+        <div class="q-head">
+          <span class="q-num">問16</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>姉<rt>あね</rt></ruby>は、<ruby>声<rt>こえ</rt></ruby>を<ruby>一切<rt>いっさい</rt></ruby><ruby>上<rt>あ</rt></ruby>げることなく、ただひたすらに、<ruby>静<rt>しず</rt></ruby>かに<ruby>泣<rt>な</rt></ruby>いていた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">姉は声を上げなかった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">姉は静かに泣いていた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">姉はひたすら泣いていた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">姉は静かに泣いていた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="17">
+        <div class="q-head">
+          <span class="q-num">問17</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">この<ruby>冬<rt>ふゆ</rt></ruby>、<ruby>北海道<rt>ほっかいどう</rt></ruby>の<ruby>山<rt>やま</rt></ruby>で、<ruby>父<rt>ちち</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めてスキーを<ruby>楽<rt>たの</rt></ruby>しんだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">父はこの冬に北海道へ行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">父はスキーを楽しんだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">父は北海道の山でスキーをした。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">父はスキーを楽しんだ。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="18">
+        <div class="q-head">
+          <span class="q-num">問18</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>去年<rt>きょねん</rt></ruby>の<ruby>秋<rt>あき</rt></ruby>、<ruby>山<rt>やま</rt></ruby>の<ruby>頂上<rt>ちょうじょう</rt></ruby>で、<ruby>父<rt>ちち</rt></ruby>と<ruby>弟<rt>おとうと</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めて<ruby>日<rt>ひ</rt></ruby>の<ruby>出<rt>で</rt></ruby>を<ruby>見<rt>み</rt></ruby>た。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">父と弟は山の頂上で写真を撮った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">去年の秋、父と弟は山に登った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">父と弟は日の出を見た。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">父と弟は日の出を見た。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="19">
+        <div class="q-head">
+          <span class="q-num">問19</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>昨日<rt>きのう</rt></ruby>の<ruby>午後<rt>ごご</rt></ruby>、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>音楽室<rt>おんがくしつ</rt></ruby>で、<ruby>佑樹<rt>ゆうき</rt></ruby>は<ruby>一人<rt>ひとり</rt></ruby>でピアノを<ruby>練習<rt>れんしゅう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">佑樹は昨日の午後に音楽室に行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">佑樹はピアノを練習した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">佑樹は音楽室でピアノを弾いた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">佑樹はピアノを練習した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="20">
+        <div class="q-head">
+          <span class="q-num">問20</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>昨日<rt>きのう</rt></ruby>の<ruby>夕方<rt>ゆうがた</rt></ruby>、<ruby>駅<rt>えき</rt></ruby>のホームで、<ruby>和也<rt>かずや</rt></ruby>は<ruby>昔<rt>むかし</rt></ruby>の<ruby>担任<rt>たんにん</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>に<ruby>偶然<rt>ぐうぜん</rt></ruby><ruby>出会<rt>であ</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">和也は昔の担任の先生に偶然出会った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">和也は駅のホームで先生に会った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">和也は昨日の夕方に駅に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">和也は昔の担任の先生に偶然出会った。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-3" role="tabpanel">
+
+      <div class="q-card" data-q="1">
+        <div class="q-head">
+          <span class="q-num">問1</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>全国大会<rt>ぜんこくたいかい</rt></ruby>で<ruby>二連覇<rt>にれんぱ</rt></ruby>を<ruby>果<rt>は</rt></ruby>たした<ruby>強豪校<rt>きょうごうこう</rt></ruby>のキャプテン<ruby>優<rt>まさる</rt></ruby>は、<ruby>試合前<rt>しあいまえ</rt></ruby>に<ruby>仲間<rt>なかま</rt></ruby>を<ruby>鼓舞<rt>こぶ</rt></ruby>するスピーチをした。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">優は全国大会で二連覇した。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">優は仲間を鼓舞するスピーチをした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">優は強豪校のキャプテンだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">優は仲間を鼓舞するスピーチをした。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="2">
+        <div class="q-head">
+          <span class="q-num">問2</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>地元<rt>じもと</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもたちに<ruby>親<rt>した</rt></ruby>しまれてきた<ruby>古<rt>ふる</rt></ruby>い<ruby>商店街<rt>しょうてんがい</rt></ruby>の<ruby>文具店<rt>ぶんぐてん</rt></ruby>は、<ruby>来月<rt>らいげつ</rt></ruby><ruby>閉店<rt>へいてん</rt></ruby>する。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">文具店は地元の子どもたちに親しまれてきた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">文具店は来月閉店する。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">文具店は商店街にある。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">文具店は来月閉店する。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="3">
+        <div class="q-head">
+          <span class="q-num">問3</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>厳<rt>きび</rt></ruby>しい<ruby>修行<rt>しゅぎょう</rt></ruby>を<ruby>積<rt>つ</rt></ruby>んできた<ruby>若手<rt>わかて</rt></ruby>の<ruby>職人<rt>しょくにん</rt></ruby>の<ruby>健吾<rt>けんご</rt></ruby>は、<ruby>今年<rt>ことし</rt></ruby>ついに<ruby>独立<rt>どくりつ</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">健吾は厳しい修行を積んできた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">健吾は若手の職人だ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">健吾は今年独立した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">健吾は今年独立した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="4">
+        <div class="q-head">
+          <span class="q-num">問4</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">十<ruby>年以上<rt>ねんいじょう</rt></ruby><ruby>訓練<rt>くんれん</rt></ruby>を<ruby>積<rt>つ</rt></ruby>んできたベテランパイロットの<ruby>加奈子<rt>かなこ</rt></ruby>は、<ruby>今月<rt>こんげつ</rt></ruby><ruby>初<rt>はじ</rt></ruby>めての<ruby>国際線<rt>こくさいせん</rt></ruby>を<ruby>飛<rt>と</rt></ruby>んだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">加奈子は十年以上訓練を積んできた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">加奈子はベテランパイロットだ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">加奈子は初めての国際線を飛んだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">加奈子は初めての国際線を飛んだ。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="5">
+        <div class="q-head">
+          <span class="q-num">問5</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>友達<rt>ともだち</rt></ruby>に<ruby>誘<rt>さそ</rt></ruby>われたため、<ruby>光<rt>ひかる</rt></ruby>は<ruby>放課後<rt>ほうかご</rt></ruby>に<ruby>図書室<rt>としょしつ</rt></ruby>へ<ruby>行<rt>い</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">光は放課後に図書室へ行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">光は図書室へ行こうとした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">光は友達に誘われた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">光は放課後に図書室へ行った。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="6">
+        <div class="q-head">
+          <span class="q-num">問6</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先生<rt>せんせい</rt></ruby>に<ruby>呼<rt>よ</rt></ruby>ばれたので、<ruby>蓮<rt>れん</rt></ruby>は<ruby>急<rt>いそ</rt></ruby>いで<ruby>職員室<rt>しょくいんしつ</rt></ruby>に<ruby>向<rt>む</rt></ruby>かった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">蓮は急いで職員室に向かった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">蓮は職員室に行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">蓮は先生に呼ばれた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">蓮は急いで職員室に向かった。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="7">
+        <div class="q-head">
+          <span class="q-num">問7</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>道<rt>みち</rt></ruby>がぬかるんでいたので、<ruby>真由<rt>まゆ</rt></ruby>は<ruby>長靴<rt>ながぐつ</rt></ruby>に<ruby>履<rt>は</rt></ruby>き<ruby>替<rt>か</rt></ruby>えて<ruby>出<rt>で</rt></ruby>かけた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">真由は長靴を履いた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">真由は長靴に履き替えて出かけた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">真由は道がぬかるんでいると気づいた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">真由は長靴に履き替えて出かけた。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="8">
+        <div class="q-head">
+          <span class="q-num">問8</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>鍵<rt>かぎ</rt></ruby>を<ruby>失<rt>な</rt></ruby>くしてしまったので、<ruby>桃香<rt>ももか</rt></ruby>は<ruby>鍵屋<rt>かぎや</rt></ruby>を<ruby>呼<rt>よ</rt></ruby>んで<ruby>玄関<rt>げんかん</rt></ruby>を<ruby>開<rt>あ</rt></ruby>けてもらった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">桃香は鍵屋を呼んで玄関を開けてもらった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">桃香は鍵を失くしてしまった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">桃香は玄関を開けた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">桃香は鍵屋を呼んで玄関を開けてもらった。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="9">
+        <div class="q-head">
+          <span class="q-num">問9</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>足<rt>あし</rt></ruby>を<ruby>痛<rt>いた</rt></ruby>めて<ruby>走<rt>はし</rt></ruby>れなくなった<ruby>翔<rt>しょう</rt></ruby>のために、コーチは<ruby>毎日<rt>まいにち</rt></ruby><ruby>放課後<rt>ほうかご</rt></ruby>、<ruby>専用<rt>せんよう</rt></ruby>のリハビリメニューを<ruby>考<rt>かんが</rt></ruby>えてくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">コーチは翔のためにリハビリメニューを考えてくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">コーチは毎日放課後に練習をしている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">翔は足を痛めて走れない。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">コーチは翔のためにリハビリメニューを考えてくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="10">
+        <div class="q-head">
+          <span class="q-num">問10</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>病気<rt>びょうき</rt></ruby>がちな<ruby>母<rt>はは</rt></ruby>を<ruby>支<rt>ささ</rt></ruby>えるために、<ruby>娘<rt>むすめ</rt></ruby>の<ruby>紬<rt>つむぎ</rt></ruby>は<ruby>高校<rt>こうこう</rt></ruby>を<ruby>卒業<rt>そつぎょう</rt></ruby>してから、<ruby>地元<rt>じもと</rt></ruby>での<ruby>就職<rt>しゅうしょく</rt></ruby>を<ruby>選<rt>えら</rt></ruby>んだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">紬は母を支えるために地元で就職した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">紬は高校を卒業して就職した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">母は病気がちだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">紬は母を支えるために地元で就職した。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="11">
+        <div class="q-head">
+          <span class="q-num">問11</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>怪我<rt>けが</rt></ruby>をして<ruby>松葉杖<rt>まつばづえ</rt></ruby>をついているわたしのために、<ruby>友人<rt>ゆうじん</rt></ruby>の<ruby>克彦<rt>かつひこ</rt></ruby>は<ruby>学校<rt>がっこう</rt></ruby>のある<ruby>日<rt>ひ</rt></ruby>は<ruby>必<rt>かなら</rt></ruby>ず<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>登校<rt>とうこう</rt></ruby>してくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">克彦は毎日わたしの家に来る。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">克彦はわたしと一緒に登校してくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">わたしは怪我をして松葉杖をついている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">克彦はわたしと一緒に登校してくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="12">
+        <div class="q-head">
+          <span class="q-num">問12</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>骨折<rt>こっせつ</rt></ruby>して<ruby>動<rt>うご</rt></ruby>けないお<ruby>年寄<rt>としよ</rt></ruby>りのために、ボランティアの<ruby>学生<rt>がくせい</rt></ruby>たちは<ruby>毎週土曜日<rt>まいしゅうどようび</rt></ruby>、<ruby>料理<rt>りょうり</rt></ruby>を<ruby>作<rt>つく</rt></ruby>って<ruby>届<rt>とど</rt></ruby>けている。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">お年寄りは骨折して動けない。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">学生たちは毎週土曜日に訪問している。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">学生たちはお年寄りのために料理を届けている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">学生たちはお年寄りのために料理を届けている。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="13">
+        <div class="q-head">
+          <span class="q-num">問13</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>選手<rt>せんしゅ</rt></ruby>たちは、<ruby>夏<rt>なつ</rt></ruby>の<ruby>暑<rt>あつ</rt></ruby>さに<ruby>負<rt>ま</rt></ruby>けず、<ruby>黙々<rt>もくもく</rt></ruby>と、<ruby>最後<rt>さいご</rt></ruby>まで<ruby>一生懸命<rt>いっしょうけんめい</rt></ruby>に<ruby>練習<rt>れんしゅう</rt></ruby>し<ruby>続<rt>つづ</rt></ruby>けた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">選手たちは黙々と練習し続けた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">選手たちは暑さに負けなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">選手たちは最後まで練習した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">選手たちは黙々と練習し続けた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="14">
+        <div class="q-head">
+          <span class="q-num">問14</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text">コーチは、<ruby>選手<rt>せんしゅ</rt></ruby>一人一人に、とても<ruby>細<rt>こま</rt></ruby>かく、<ruby>熱心<rt>ねっしん</rt></ruby>に<ruby>技術<rt>ぎじゅつ</rt></ruby>を<ruby>教<rt>おし</rt></ruby>えた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">コーチは選手一人一人に教えた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">コーチは熱心に技術を教えた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">コーチは細かく指導するタイプだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">コーチは熱心に技術を教えた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="15">
+        <div class="q-head">
+          <span class="q-num">問15</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先輩<rt>せんぱい</rt></ruby>は、ほんの<ruby>少<rt>すこ</rt></ruby>しも<ruby>動<rt>うご</rt></ruby>じることなく、<ruby>冷静<rt>れいせい</rt></ruby>に、いつも<ruby>通<rt>どお</rt></ruby>りに<ruby>打席<rt>だせき</rt></ruby>に<ruby>立<rt>た</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">先輩は少しも動じなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">先輩は打席に立った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">先輩は冷静に打席に立った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">先輩は冷静に打席に立った。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="16">
+        <div class="q-head">
+          <span class="q-num">問16</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>看護師<rt>かんごし</rt></ruby>さんは、<ruby>患者<rt>かんじゃ</rt></ruby>に<ruby>向<rt>む</rt></ruby>かって、とても<ruby>穏<rt>おだ</rt></ruby>やかに、<ruby>笑顔<rt>えがお</rt></ruby>を<ruby>忘<rt>わす</rt></ruby>れずに<ruby>丁寧<rt>ていねい</rt></ruby>に<ruby>話<rt>はな</rt></ruby>しかけた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">看護師さんはとても優しい人だった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">看護師さんは穏やかに患者に話しかけた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">看護師さんは患者に笑顔で接した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">看護師さんは穏やかに患者に話しかけた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="17">
+        <div class="q-head">
+          <span class="q-num">問17</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先月<rt>せんげつ</rt></ruby>の<ruby>文化祭<rt>ぶんかさい</rt></ruby>で、<ruby>舞台<rt>ぶたい</rt></ruby>の<ruby>上<rt>うえ</rt></ruby>で、<ruby>雄太<rt>ゆうた</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めて<ruby>劇<rt>げき</rt></ruby>の<ruby>主役<rt>しゅやく</rt></ruby>を<ruby>演<rt>え</rt></ruby>じた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">雄太は劇の主役を演じた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">雄太は舞台の上で演技をした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">雄太は先月の文化祭で舞台に立った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">雄太は劇の主役を演じた。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="18">
+        <div class="q-head">
+          <span class="q-num">問18</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週末<rt>せんしゅうまつ</rt></ruby>、<ruby>市内<rt>しない</rt></ruby>の<ruby>陸上競技場<rt>りくじょうきょうぎじょう</rt></ruby>で、<ruby>理沙<rt>りさ</rt></ruby>は百メートルの<ruby>自己記録<rt>じこきろく</rt></ruby>を<ruby>更新<rt>こうしん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">理沙は先週末に陸上競技場へ行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">理沙は市内の陸上競技場で走った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">理沙は自己記録を更新した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">理沙は自己記録を更新した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="19">
+        <div class="q-head">
+          <span class="q-num">問19</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週<rt>せんしゅう</rt></ruby>の<ruby>金曜日<rt>きんようび</rt></ruby>、<ruby>隣町<rt>となりまち</rt></ruby>のホールで、<ruby>遥斗<rt>はると</rt></ruby>は<ruby>合唱<rt>がっしょう</rt></ruby>コンクールで<ruby>優勝<rt>ゆうしょう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">遥斗は合唱コンクールで優勝した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">遥斗は隣町のホールで歌った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">遥斗は先週の金曜日にホールに行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">遥斗は合唱コンクールで優勝した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="20">
+        <div class="q-head">
+          <span class="q-num">問20</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先日<rt>せんじつ</rt></ruby>、<ruby>科学館<rt>かがくかん</rt></ruby>のプラネタリウムで、<ruby>稔<rt>みのる</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めて<ruby>満天<rt>まんてん</rt></ruby>の<ruby>星<rt>ほし</rt></ruby>を<ruby>見<rt>み</rt></ruby>た。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">稔はプラネタリウムで星を見た。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">稔は先日、科学館に行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">稔は満天の星を見た。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">稔は満天の星を見た。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-4" role="tabpanel">
+
+      <div class="q-card" data-q="1">
+        <div class="q-head">
+          <span class="q-num">問1</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>長年<rt>ながねん</rt></ruby><ruby>地域<rt>ちいき</rt></ruby>の<ruby>清掃活動<rt>せいそうかつどう</rt></ruby>を<ruby>続<rt>つづ</rt></ruby>けてきた<ruby>中村<rt>なかむら</rt></ruby>さんは、<ruby>今年<rt>ことし</rt></ruby><ruby>市長賞<rt>しちょうしょう</rt></ruby>を<ruby>受賞<rt>じゅしょう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">中村さんは長年清掃活動を続けてきた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">中村さんは市長賞を受賞した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">中村さんは地域の清掃活動をしている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">中村さんは市長賞を受賞した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="2">
+        <div class="q-head">
+          <span class="q-num">問2</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>子<rt>こ</rt></ruby>どもたちに<ruby>愛<rt>あい</rt></ruby>されてきた<ruby>絵本作家<rt>えほんさっか</rt></ruby>の<ruby>西村<rt>にしむら</rt></ruby>さんは、<ruby>今年<rt>ことし</rt></ruby><ruby>記念<rt>きねん</rt></ruby>すべき百<ruby>冊目<rt>さつめ</rt></ruby>の<ruby>作品<rt>さくひん</rt></ruby>を<ruby>発表<rt>はっぴょう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">西村さんは百冊目の作品を発表した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">西村さんは子どもたちに愛されてきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">西村さんは有名な絵本作家だ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">西村さんは百冊目の作品を発表した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="3">
+        <div class="q-head">
+          <span class="q-num">問3</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>何年<rt>なんねん</rt></ruby>もかけて<ruby>準備<rt>じゅんび</rt></ruby>してきた<ruby>若<rt>わか</rt></ruby>い<ruby>研究者<rt>けんきゅうしゃ</rt></ruby>の<ruby>実花<rt>みか</rt></ruby>は、<ruby>今年<rt>ことし</rt></ruby>ついに<ruby>新薬<rt>しんやく</rt></ruby>の<ruby>開発<rt>かいはつ</rt></ruby>に<ruby>成功<rt>せいこう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">実花は新薬の開発に成功した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">実花は若い研究者だ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">実花は何年もかけて準備してきた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">実花は新薬の開発に成功した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="4">
+        <div class="q-head">
+          <span class="q-num">問4</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>子<rt>こ</rt></ruby>どもたちに<ruby>親<rt>した</rt></ruby>しまれてきた<ruby>動物園<rt>どうぶつえん</rt></ruby>のゾウの<ruby>花子<rt>はなこ</rt></ruby>は、<ruby>今年<rt>ことし</rt></ruby>の<ruby>春<rt>はる</rt></ruby>に<ruby>亡<rt>な</rt></ruby>くなった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">花子は子どもたちに親しまれてきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">花子は動物園で有名なゾウだ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">花子は今年の春に亡くなった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">花子は今年の春に亡くなった。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="5">
+        <div class="q-head">
+          <span class="q-num">問5</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>急<rt>きゅう</rt></ruby>に<ruby>雨<rt>あめ</rt></ruby>が<ruby>降<rt>ふ</rt></ruby>ってきたので、<ruby>浩<rt>ひろ</rt></ruby>は<ruby>軒下<rt>のきした</rt></ruby>に<ruby>入<rt>はい</rt></ruby>って<ruby>雨宿<rt>あまやど</rt></ruby>りをした。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">浩は軒下に入って雨宿りをした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">急に雨が降ってきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">浩は雨宿りをした。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">浩は軒下に入って雨宿りをした。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="6">
+        <div class="q-head">
+          <span class="q-num">問6</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先生<rt>せんせい</rt></ruby>に<ruby>相談<rt>そうだん</rt></ruby>したかったので、<ruby>亜矢<rt>あや</rt></ruby>は<ruby>放課後<rt>ほうかご</rt></ruby>まで<ruby>待<rt>ま</rt></ruby>って<ruby>職員室<rt>しょくいんしつ</rt></ruby>に<ruby>行<rt>い</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">亜矢は放課後に職員室へ行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">亜矢は先生に相談したかった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">亜矢は放課後まで待って職員室に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">亜矢は放課後まで待って職員室に行った。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="7">
+        <div class="q-head">
+          <span class="q-num">問7</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>約束<rt>やくそく</rt></ruby>の<ruby>時間<rt>じかん</rt></ruby>に<ruby>遅<rt>おく</rt></ruby>れそうだったので、<ruby>純平<rt>じゅんぺい</rt></ruby>はタクシーに<ruby>乗<rt>の</rt></ruby>って<ruby>急<rt>いそ</rt></ruby>いだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">純平はタクシーに乗った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">純平は約束の時間に遅れそうだった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">純平はタクシーに乗って急いだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">純平はタクシーに乗って急いだ。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="8">
+        <div class="q-head">
+          <span class="q-num">問8</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>荷物<rt>にもつ</rt></ruby>が<ruby>重<rt>おも</rt></ruby>くて<ruby>持<rt>も</rt></ruby>てなかったので、<ruby>颯<rt>そう</rt></ruby>は<ruby>台車<rt>だいしゃ</rt></ruby>を<ruby>借<rt>か</rt></ruby>りて<ruby>運<rt>はこ</rt></ruby>んだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">颯は荷物が重くて持てなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">颯は台車を借りた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">颯は台車を借りて荷物を運んだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">颯は台車を借りて荷物を運んだ。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="9">
+        <div class="q-head">
+          <span class="q-num">問9</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>転校<rt>てんこう</rt></ruby>してきて<ruby>心細<rt>こころぼそ</rt></ruby>かった<ruby>私<rt>わたし</rt></ruby>のために、クラスメートの<ruby>桂<rt>かつら</rt></ruby>は<ruby>休<rt>やす</rt></ruby>み<ruby>時間<rt>じかん</rt></ruby>のたびに<ruby>話<rt>はな</rt></ruby>しかけてくれた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">私は転校してきて心細かった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">桂は休み時間にいつも話しかける。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">桂は私のために話しかけてくれた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">桂は私のために話しかけてくれた。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="10">
+        <div class="q-head">
+          <span class="q-num">問10</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>仕事<rt>しごと</rt></ruby>で<ruby>落<rt>お</rt></ruby>ち<ruby>込<rt>こ</rt></ruby>んでいるお<ruby>父<rt>とう</rt></ruby>さんを<ruby>元気<rt>げんき</rt></ruby>づけるために、<ruby>娘<rt>むすめ</rt></ruby>の<ruby>詩織<rt>しおり</rt></ruby>は<ruby>手作<rt>てづく</rt></ruby>りのケーキと<ruby>手紙<rt>てがみ</rt></ruby>を<ruby>用意<rt>ようい</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">詩織はお父さんのためにケーキと手紙を用意した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">詩織は手作りのケーキを焼いた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">お父さんは仕事で落ち込んでいる。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">詩織はお父さんのためにケーキと手紙を用意した。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="11">
+        <div class="q-head">
+          <span class="q-num">問11</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>認知症<rt>にんちしょう</rt></ruby>のおじいちゃんを<ruby>世話<rt>せわ</rt></ruby>するために、<ruby>叔母<rt>おば</rt></ruby>の<ruby>千鶴<rt>ちづる</rt></ruby>は<ruby>遠方<rt>えんぽう</rt></ruby>から<ruby>地元<rt>じもと</rt></ruby>に<ruby>戻<rt>もど</rt></ruby>ってきた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">千鶴はおじいちゃんを世話するために地元に戻った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">おじいちゃんは認知症だ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">千鶴は地元から離れていた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">千鶴はおじいちゃんを世話するために地元に戻った。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="12">
+        <div class="q-head">
+          <span class="q-num">問12</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>引退<rt>いんたい</rt></ruby>して<ruby>暇<rt>ひま</rt></ruby>になったお<ruby>父<rt>とう</rt></ruby>さんのために、<ruby>妻<rt>つま</rt></ruby>の<ruby>由美子<rt>ゆみこ</rt></ruby>は、<ruby>趣味<rt>しゅみ</rt></ruby>のサークルを<ruby>探<rt>さが</rt></ruby>して<ruby>一緒<rt>いっしょ</rt></ruby>に<ruby>参加<rt>さんか</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">由美子はお父さんのためにサークルに一緒に参加した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">お父さんは引退して暇になった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">由美子は趣味のサークルを探した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">由美子はお父さんのためにサークルに一緒に参加した。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="13">
+        <div class="q-head">
+          <span class="q-num">問13</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>父<rt>ちち</rt></ruby>は、<ruby>毎朝<rt>まいあさ</rt></ruby>、<ruby>悠々<rt>ゆうゆう</rt></ruby>と、<ruby>急<rt>いそ</rt></ruby>ぐ<ruby>様子<rt>ようす</rt></ruby>もなく、<ruby>公園<rt>こうえん</rt></ruby>をゆっくり<ruby>散歩<rt>さんぽ</rt></ruby>する。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">父は悠々と公園を散歩する。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">父は毎朝公園に散歩に行く。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">父は急がずに公園を歩いている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">父は悠々と公園を散歩する。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="14">
+        <div class="q-head">
+          <span class="q-num">問14</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>隊長<rt>たいちょう</rt></ruby>は、<ruby>部下<rt>ぶか</rt></ruby>に<ruby>向<rt>む</rt></ruby>かって、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>威厳<rt>いげん</rt></ruby>のある<ruby>声<rt>こえ</rt></ruby>で、<ruby>静<rt>しず</rt></ruby>かに<ruby>命令<rt>めいれい</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">隊長は威厳のある声で命令した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">隊長は部下に命令した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">隊長は非常に厳しい人だった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">隊長は威厳のある声で命令した。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="15">
+        <div class="q-head">
+          <span class="q-num">問15</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>審査員<rt>しんさいん</rt></ruby>は、<ruby>応募作品<rt>おうぼさくひん</rt></ruby>の一つひとつを、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>丁寧<rt>ていねい</rt></ruby>に、<ruby>時間<rt>じかん</rt></ruby>をかけて<ruby>確認<rt>かくにん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">審査員は時間をかけて審査した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">審査員は応募作品を確認した。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">審査員は丁寧に応募作品を確認した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">審査員は丁寧に応募作品を確認した。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="16">
+        <div class="q-head">
+          <span class="q-num">問16</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>部長<rt>ぶちょう</rt></ruby>は、<ruby>新入社員<rt>しんにゅうしゃいん</rt></ruby>に<ruby>対<rt>たい</rt></ruby>して、<ruby>非常<rt>ひじょう</rt></ruby>に<ruby>厳<rt>きび</rt></ruby>しく、一<ruby>切<rt>さい</rt></ruby><ruby>妥協<rt>だきょう</rt></ruby>せずに<ruby>指導<rt>しどう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">部長は厳しく新入社員を指導した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">部長は一切妥協しなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">部長は非常に厳格な人だ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">部長は厳しく新入社員を指導した。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="17">
+        <div class="q-head">
+          <span class="q-num">問17</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>今朝<rt>けさ</rt></ruby>、<ruby>学校<rt>がっこう</rt></ruby>の<ruby>正門<rt>せいもん</rt></ruby>で、<ruby>花音<rt>かのん</rt></ruby>は<ruby>大好<rt>だいす</rt></ruby>きなアイドルに<ruby>偶然<rt>ぐうぜん</rt></ruby><ruby>出会<rt>であ</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">花音は正門でアイドルを見かけた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">花音は今朝学校に行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">花音は大好きなアイドルに偶然出会った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">花音は大好きなアイドルに偶然出会った。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="18">
+        <div class="q-head">
+          <span class="q-num">問18</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>今年<rt>ことし</rt></ruby>の<ruby>夏<rt>なつ</rt></ruby>、<ruby>沖縄<rt>おきなわ</rt></ruby>の<ruby>海<rt>うみ</rt></ruby>で、<ruby>菜摘<rt>なつみ</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めてシュノーケリングを<ruby>体験<rt>たいけん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">菜摘は沖縄の海でシュノーケリングをした。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">菜摘はシュノーケリングを体験した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">菜摘は今年の夏に沖縄に行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">菜摘はシュノーケリングを体験した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="19">
+        <div class="q-head">
+          <span class="q-num">問19</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週末<rt>せんしゅうまつ</rt></ruby>、<ruby>市民<rt>しみん</rt></ruby>ホールの<ruby>大<rt>おお</rt></ruby>ステージで、<ruby>涼太<rt>りょうた</rt></ruby>はマジックショーを<ruby>披露<rt>ひろう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">涼太は先週末に市民ホールに行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">涼太は大ステージでマジックをした。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">涼太はマジックショーを披露した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">涼太はマジックショーを披露した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="20">
+        <div class="q-head">
+          <span class="q-num">問20</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先月末<rt>せんげつまつ</rt></ruby>、<ruby>隣町<rt>となりまち</rt></ruby>の<ruby>公民館<rt>こうみんかん</rt></ruby>で、<ruby>葵<rt>あおい</rt></ruby>はピアノの<ruby>発表会<rt>はっぴょうかい</rt></ruby>に<ruby>出演<rt>しゅつえん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">葵は先月末に隣町に行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">葵は公民館でピアノを弾いた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">葵はピアノの発表会に出演した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">葵はピアノの発表会に出演した。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel" id="panel-5" role="tabpanel">
+
+      <div class="q-card" data-q="1">
+        <div class="q-head">
+          <span class="q-num">問1</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>地元<rt>じもと</rt></ruby>の<ruby>子<rt>こ</rt></ruby>どもたちに<ruby>長年<rt>ながねん</rt></ruby><ruby>親<rt>した</rt></ruby>しまれてきた<ruby>図書館<rt>としょかん</rt></ruby>の<ruby>司書<rt>ししょ</rt></ruby>の<ruby>梅田<rt>うめだ</rt></ruby>さんは、<ruby>今年度末<rt>こんねんどまつ</rt></ruby>に<ruby>退職<rt>たいしょく</rt></ruby>する。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">梅田さんは今年度末に退職する。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">梅田さんは長年子どもたちに親しまれてきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">梅田さんは図書館の司書だ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">梅田さんは今年度末に退職する。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="2">
+        <div class="q-head">
+          <span class="q-num">問2</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>長年<rt>ながねん</rt></ruby><ruby>プロ<rt>プロ</rt></ruby>として<ruby>活躍<rt>かつやく</rt></ruby>してきた<ruby>ベテラン選手<rt>ベテランせんしゅ</rt></ruby>の<ruby>克也<rt>かつや</rt></ruby>は、<ruby>今季<rt>こんき</rt></ruby>限りで<ruby>引退<rt>いんたい</rt></ruby>を<ruby>発表<rt>はっぴょう</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">克也はベテラン選手だ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">克也は引退を発表した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">克也は長年プロとして活躍してきた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">克也は引退を発表した。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="3">
+        <div class="q-head">
+          <span class="q-num">問3</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>幼<rt>おさな</rt></ruby>いころから<ruby>料理<rt>りょうり</rt></ruby>が<ruby>好<rt>す</rt></ruby>きで、<ruby>数々<rt>かずかず</rt></ruby>のコンテストで<ruby>入賞<rt>にゅうしょう</rt></ruby>してきた<ruby>美桜<rt>みお</rt></ruby>は、<ruby>今春<rt>こんしゅん</rt></ruby><ruby>念願<rt>ねんがん</rt></ruby>の<ruby>料理教室<rt>りょうりきょうしつ</rt></ruby>を<ruby>開<rt>ひら</rt></ruby>いた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">美桜は料理教室を開いた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">美桜は幼いころから料理が好きだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">美桜はコンテストで入賞してきた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">美桜は料理教室を開いた。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="4">
+        <div class="q-head">
+          <span class="q-num">問4</span><span class="q-type">主語述語型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>地域<rt>ちいき</rt></ruby>の<ruby>人々<rt>ひとびと</rt></ruby>に<ruby>愛<rt>あい</rt></ruby>されてきた<ruby>老舗<rt>しにせ</rt></ruby>の<ruby>和菓子屋<rt>わがしや</rt></ruby>は、<ruby>今月末<rt>こんげつまつ</rt></ruby>についに<ruby>廃業<rt>はいぎょう</rt></ruby>する。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">和菓子屋は地域の人々に愛されてきた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">和菓子屋は老舗として有名だ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">和菓子屋は今月末に廃業する。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">和菓子屋は今月末に廃業する。</p>
+              <p class="type-note">【型】主語述語型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="5">
+        <div class="q-head">
+          <span class="q-num">問5</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>道<rt>みち</rt></ruby>が<ruby>混<rt>こ</rt></ruby>んでいたため、<ruby>奏<rt>かなで</rt></ruby>は<ruby>電車<rt>でんしゃ</rt></ruby>に<ruby>乗<rt>の</rt></ruby>り<ruby>換<rt>か</rt></ruby>えて<ruby>目的地<rt>もくてきち</rt></ruby>へ<ruby>向<rt>む</rt></ruby>かった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">奏は電車に乗り換えた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">道が混んでいた。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">奏は電車に乗り換えて目的地へ向かった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">奏は電車に乗り換えて目的地へ向かった。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="6">
+        <div class="q-head">
+          <span class="q-num">問6</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>急<rt>きゅう</rt></ruby>に<ruby>寒<rt>さむ</rt></ruby>くなったので、<ruby>彩葉<rt>いろは</rt></ruby>はクローゼットからコートを<ruby>取<rt>と</rt></ruby>り<ruby>出<rt>だ</rt></ruby>して<ruby>着<rt>き</rt></ruby>た。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">彩葉はコートを取り出して着た。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">彩葉はコートを取り出した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">急に寒くなった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">彩葉はコートを取り出して着た。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="7">
+        <div class="q-head">
+          <span class="q-num">問7</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>試験<rt>しけん</rt></ruby>に<ruby>落<rt>お</rt></ruby>ちてしまったので、<ruby>大河<rt>たいが</rt></ruby>は<ruby>今年<rt>ことし</rt></ruby>も<ruby>再挑戦<rt>さいちょうせん</rt></ruby>することにした。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">大河は今年も受験する。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">大河は再挑戦することにした。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">大河は試験に落ちてしまった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">大河は再挑戦することにした。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="8">
+        <div class="q-head">
+          <span class="q-num">問8</span><span class="q-type">中心部分発見型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>荷物<rt>にもつ</rt></ruby>が<ruby>届<rt>とど</rt></ruby>かなかったので、<ruby>麻衣<rt>まい</rt></ruby>は<ruby>配送会社<rt>はいそうがいしゃ</rt></ruby>に<ruby>電話<rt>でんわ</rt></ruby>して<ruby>確認<rt>かくにん</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">麻衣は配送会社に電話して確認した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">麻衣は配送会社に電話した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">麻衣は荷物が届かなかった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">麻衣は配送会社に電話して確認した。</p>
+              <p class="type-note">【型】中心部分発見型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="9">
+        <div class="q-head">
+          <span class="q-num">問9</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>長期入院<rt>ちょうきにゅういん</rt></ruby>している<ruby>父<rt>ちち</rt></ruby>のために、<ruby>息子<rt>むすこ</rt></ruby>の<ruby>拓也<rt>たくや</rt></ruby>は<ruby>仕事<rt>しごと</rt></ruby>の<ruby>休憩時間<rt>きゅうけいじかん</rt></ruby>を<ruby>利用<rt>りよう</rt></ruby>して<ruby>毎日<rt>まいにち</rt></ruby><ruby>見舞<rt>みま</rt></ruby>いに<ruby>来<rt>き</rt></ruby>てくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">拓也は毎日病院の近くで仕事をしている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">父は長期入院している。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">拓也は父のために毎日見舞いに来てくれる。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">拓也は父のために毎日見舞いに来てくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="10">
+        <div class="q-head">
+          <span class="q-num">問10</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>受験<rt>じゅけん</rt></ruby>で<ruby>不安<rt>ふあん</rt></ruby>な<ruby>私<rt>わたし</rt></ruby>を<ruby>支<rt>ささ</rt></ruby>えるために、<ruby>担任<rt>たんにん</rt></ruby>の<ruby>先生<rt>せんせい</rt></ruby>は<ruby>放課後<rt>ほうかご</rt></ruby>に<ruby>毎回<rt>まいかい</rt></ruby><ruby>個別<rt>こべつ</rt></ruby>に<ruby>相談<rt>そうだん</rt></ruby>に<ruby>乗<rt>の</rt></ruby>ってくれた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">私は受験で不安を感じている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">担任の先生は放課後に個別指導をしている。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">担任の先生は私の相談に乗ってくれた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">担任の先生は私の相談に乗ってくれた。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="11">
+        <div class="q-head">
+          <span class="q-num">問11</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>遠方<rt>えんぽう</rt></ruby>に<ruby>転勤<rt>てんきん</rt></ruby>した<ruby>夫<rt>おっと</rt></ruby>のために、<ruby>妻<rt>つま</rt></ruby>の<ruby>優香<rt>ゆうか</rt></ruby>は<ruby>週末<rt>しゅうまつ</rt></ruby>のたびに、<ruby>手作<rt>てづく</rt></ruby>りの<ruby>料理<rt>りょうり</rt></ruby>を<ruby>冷凍<rt>れいとう</rt></ruby>して<ruby>送<rt>おく</rt></ruby>ってくれる。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">優香は週末に料理を作っている。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">優香は夫のために手作り料理を送ってくれる。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">夫は遠方に転勤している。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">優香は夫のために手作り料理を送ってくれる。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="12">
+        <div class="q-head">
+          <span class="q-num">問12</span><span class="q-type">要点まとめ型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>一人暮<rt>ひとりぐ</rt></ruby>らしで<ruby>寂<rt>さび</rt></ruby>しそうなおばあちゃんのために、<ruby>孫<rt>まご</rt></ruby>の<ruby>海斗<rt>かいと</rt></ruby>は<ruby>毎週末<rt>まいしゅうまつ</rt></ruby>、<ruby>電車<rt>でんしゃ</rt></ruby>に<ruby>乗<rt>の</rt></ruby>って<ruby>会<rt>あ</rt></ruby>いに<ruby>行<rt>い</rt></ruby>っている。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">おばあちゃんは一人暮らしで寂しそうだ。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">海斗はおばあちゃんのために毎週末会いに行っている。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">海斗は毎週末電車に乗っている。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">海斗はおばあちゃんのために毎週末会いに行っている。</p>
+              <p class="type-note">【型】要点まとめ型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="13">
+        <div class="q-head">
+          <span class="q-num">問13</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>指揮者<rt>しきしゃ</rt></ruby>は、<ruby>団員<rt>だんいん</rt></ruby>一人一人を<ruby>見<rt>み</rt></ruby>つめながら、<ruby>堂々<rt>どうどう</rt></ruby>と、<ruby>力強<rt>ちからづよ</rt></ruby>く<ruby>腕<rt>うで</rt></ruby>を<ruby>振<rt>ふ</rt></ruby>った。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">指揮者は団員を見つめながら腕を振った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">指揮者は力強い人だった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">指揮者は堂々と腕を振った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">指揮者は堂々と腕を振った。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="14">
+        <div class="q-head">
+          <span class="q-num">問14</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先生<rt>せんせい</rt></ruby>は、<ruby>声<rt>こえ</rt></ruby>を<ruby>荒<rt>あら</rt></ruby>げることなく、いつも<ruby>穏<rt>おだ</rt></ruby>やかに、じっくりと<ruby>生徒<rt>せいと</rt></ruby>の<ruby>話<rt>はなし</rt></ruby>を<ruby>聞<rt>き</rt></ruby>いた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">先生は声を荒げなかった。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">先生は穏やかに生徒の話を聞いた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">先生はじっくりと話を聞いた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">先生は穏やかに生徒の話を聞いた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="15">
+        <div class="q-head">
+          <span class="q-num">問15</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>選手<rt>せんしゅ</rt></ruby>は、<ruby>緊張<rt>きんちょう</rt></ruby>した<ruby>様子<rt>ようす</rt></ruby>もなく、とても<ruby>自然体<rt>しぜんたい</rt></ruby>で、のびのびと<ruby>演技<rt>えんぎ</rt></ruby>した。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">選手はのびのびと演技した。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">選手は自然体で演技した。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">選手は緊張しなかった。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">選手は自然体で演技した。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="16">
+        <div class="q-head">
+          <span class="q-num">問16</span><span class="q-type">様子程度型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>職人<rt>しょくにん</rt></ruby>は、<ruby>一切<rt>いっさい</rt></ruby><ruby>手<rt>て</rt></ruby>を<ruby>抜<rt>ぬ</rt></ruby>かずに、ひたすら<ruby>丁寧<rt>ていねい</rt></ruby>に、<ruby>何時間<rt>なんじかん</rt></ruby>もかけて<ruby>仕上<rt>しあ</rt></ruby>げた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">職人は丁寧に仕上げた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">職人は手を抜かなかった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">職人は何時間もかけて仕上げた。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">職人は丁寧に仕上げた。</p>
+              <p class="type-note">【型】様子程度型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="17">
+        <div class="q-head">
+          <span class="q-num">問17</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>今年<rt>ことし</rt></ruby>の<ruby>春<rt>はる</rt></ruby>、<ruby>市内<rt>しない</rt></ruby>の<ruby>美術館<rt>びじゅつかん</rt></ruby>で、<ruby>凛<rt>りん</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めて<ruby>油絵<rt>あぶらえ</rt></ruby>の<ruby>個展<rt>こてん</rt></ruby>を<ruby>開<rt>ひら</rt></ruby>いた。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ア</span><span class="opt-text">凛は油絵の個展を開いた。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">凛は今年の春に美術館に行った。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">凛は美術館で油絵を展示した。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ア</strong></p>
+              <p class="ans-text">凛は油絵の個展を開いた。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="18">
+        <div class="q-head">
+          <span class="q-num">問18</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先週<rt>せんしゅう</rt></ruby>の<ruby>日曜日<rt>にちようび</rt></ruby>、<ruby>近所<rt>きんじょ</rt></ruby>の<ruby>川沿<rt>かわぞ</rt></ruby>いの<ruby>公園<rt>こうえん</rt></ruby>で、<ruby>陽菜<rt>ひな</rt></ruby>は<ruby>家族<rt>かぞく</rt></ruby>と<ruby>花火<rt>はなび</rt></ruby>をした。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">陽菜は川沿いの公園で家族と遊んだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">陽菜は先週の日曜日に公園に行った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">陽菜は家族と花火をした。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">陽菜は家族と花火をした。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="19">
+        <div class="q-head">
+          <span class="q-num">問19</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>先月<rt>せんげつ</rt></ruby>の<ruby>体育祭<rt>たいいくさい</rt></ruby>で、<ruby>グラウンド<rt>グラウンド</rt></ruby>の<ruby>真<rt>ま</rt></ruby>ん<ruby>中<rt>なか</rt></ruby>で、<ruby>椿<rt>つばき</rt></ruby>は<ruby>応援団長<rt>おうえんだんちょう</rt></ruby>として<ruby>大声<rt>おおごえ</rt></ruby>で<ruby>叫<rt>さけ</rt></ruby>んだ。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">椿はグラウンドの真ん中で叫んだ。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">イ</span><span class="opt-text">椿は先月の体育祭でグラウンドに立った。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">ウ</span><span class="opt-text">椿は応援団長として大声で叫んだ。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>ウ</strong></p>
+              <p class="ans-text">椿は応援団長として大声で叫んだ。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="q-card" data-q="20">
+        <div class="q-head">
+          <span class="q-num">問20</span><span class="q-type">いつどこで型</span>
+        </div>
+        <div class="q-body">
+          <p class="q-text"><ruby>今年<rt>ことし</rt></ruby>の<ruby>夏<rt>なつ</rt></ruby>、<ruby>地元<rt>じもと</rt></ruby>のお<ruby>祭<rt>まつ</rt></ruby>りの<ruby>会場<rt>かいじょう</rt></ruby>で、<ruby>凌<rt>りょう</rt></ruby>は<ruby>初<rt>はじ</rt></ruby>めて<ruby>盆踊<rt>ぼんおど</rt></ruby>りの<ruby>輪<rt>わ</rt></ruby>に<ruby>加<rt>くわ</rt></ruby>わった。</p>
+          <p class="q-inst">次の中から、この文を一文で要約したものとして最もよいものを選びなさい。</p>
+          <div class="opts-wrap">
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ア</span><span class="opt-text">凌はお祭りの会場で踊りを見た。</span>
+          </button>
+          <button class="opt" data-correct="true">
+            <span class="opt-label">イ</span><span class="opt-text">凌は盆踊りの輪に加わった。</span>
+          </button>
+          <button class="opt" data-correct="false">
+            <span class="opt-label">ウ</span><span class="opt-text">凌は今年の夏にお祭りに行った。</span>
+          </button>
+          </div>
+          <button class="toggle-btn" onclick="toggleAnswer(this)">答えを見る</button>
+          <div class="answer-box">
+            <div class="answer-inner">
+              <p class="ans-label">正解：<strong>イ</strong></p>
+              <p class="ans-text">凌は盆踊りの輪に加わった。</p>
+              <p class="type-note">【型】いつどこで型</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</main>
+<div id="score-display">合計：<span id="total-score">0</span> / 100 問正解</div>
+
+<script>
+let totalCorrect = 0;
+let totalAnswered = 0;
+const TOTAL = 100;
+
+function showPanel(n, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleAnswer(btn) {
+  const box = btn.nextElementSibling;
+  const isOpen = box.classList.contains('open');
+  box.classList.toggle('open', !isOpen);
+  btn.textContent = isOpen ? '答えを見る' : '答えを隠す';
+}
+
+function updateProgress() {
+  document.getElementById('prog-text').textContent = totalCorrect + ' / ' + TOTAL + ' 問正解';
+  const pct = Math.round(totalCorrect / TOTAL * 100);
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('total-score').textContent = totalCorrect;
+}
+
+document.querySelectorAll('.opt').forEach(opt => {
+  opt.addEventListener('click', function() {
+    const wrap = this.closest('.opts-wrap');
+    if (wrap.querySelector('[disabled]')) return; // already answered
+    const isCorrect = this.dataset.correct === 'true';
+    // mark all
+    wrap.querySelectorAll('.opt').forEach(o => {
+      o.setAttribute('disabled', '');
+      if (o.dataset.correct === 'true') o.classList.add('correct');
+      else if (o === this) o.classList.add('incorrect');
+    });
+    if (isCorrect) {
+      totalCorrect++;
+    }
+    totalAnswered++;
+    updateProgress();
+  });
+});
+</script>
+</body>
+</html>
